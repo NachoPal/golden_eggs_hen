@@ -30,6 +30,7 @@ ActiveRecord::Schema.define(version: 20170621053924) do
   end
 
   create_table "markets", force: :cascade do |t|
+    t.string   "name"
     t.integer  "primary_currency_id"
     t.integer  "secondary_currency_id"
     t.decimal  "price",                 precision: 16, scale: 8
