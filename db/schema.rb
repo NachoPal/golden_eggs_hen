@@ -44,7 +44,7 @@ ActiveRecord::Schema.define(version: 20170621053924) do
     t.string   "uuid"
     t.integer  "account_id"
     t.integer  "market_id"
-    t.string   "type"
+    t.string   "order_type"
     t.decimal  "quantity",           precision: 16, scale: 8
     t.decimal  "quantity_remaining", precision: 16, scale: 8
     t.decimal  "limit_price",        precision: 16, scale: 8

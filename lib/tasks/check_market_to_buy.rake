@@ -14,9 +14,13 @@ namespace :check do
 
     Rails.logger.info "#{args[:market_record].name} ---- #{growth}%"
 
-    if growth >= THRESHOLD_TO_BUY
-      Rake::Task['buy:market'].reenable
-      Rake::Task['buy:market'].invoke(args[:market_record].name)
+    if growth >= THRESHOLD_TO_BUY && !Order.where(market_id: args[:market_record].id).present?
+
+      Rake::Task['check:market_ask_price'].reenable
+      Rake::Task['check:market_ask_price'].invoke(args[:market_record])
+
+      #Rake::Task['sell:market'].reenable
+      #Rake::Task['sell:market'].invoke(args[:market_record].name)
     end
   end
 end

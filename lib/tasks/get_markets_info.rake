@@ -29,6 +29,9 @@ namespace :get do
         Rake::Task['save:market_in_cache'].reenable
         Rake::Task['save:market_in_cache'].invoke(market_record.id, price)
 
+        #Rake::Task['check:orders_to_sell'].reenable
+        #Rake::Task['check:orders_to_sell'].invoke(market_record)
+
         Rake::Task['check:market_to_buy'].reenable
         Rake::Task['check:market_to_buy'].invoke(market_record)
 
