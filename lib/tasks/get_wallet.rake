@@ -1,6 +1,6 @@
 namespace :get do
 
-  desc 'Get markets info'
+  desc 'Get wallets'
   task :wallets, [:account_id] => :environment do |t, args|
     args.with_defaults(account_id: 1)
 

@@ -4,6 +4,8 @@ namespace :get do
   task :markets_info => :environment do
     markets = Bittrex.client.get('public/getmarketsummaries')
 
+    MARKET_REQUEST_COUNTER += 1
+
     markets.each do |market|
       name = market['MarketName']
       currencies = market['MarketName'].split('-')
@@ -24,7 +26,18 @@ namespace :get do
       market_record = Market.where(name: name).first
 
       if market_record.present?
-        market_record.update(price: price)
+        Rake::Task['save:market_in_cache'].reenable
+        Rake::Task['save:market_in_cache'].invoke(market_record.id, price)
+
+        Rake::Task['check:market_to_buy'].reenable
+        Rake::Task['check:market_to_buy'].invoke(market_record)
+
+        puts "====================== #{MARKET_REQUEST_COUNTER} ========================="
+
+        if market_record.price != price && (MARKET_REQUEST_COUNTER % UPDATE_MARKET_DB_EACH_X_MIN) == 0
+          puts "******************** #{MARKET_REQUEST_COUNTER} *************************"
+          market_record.update(price: price)
+        end
       else
         Market.create(name: name, primary_currency_id: primary.id, secondary_currency_id: secondary.id, price: price)
       end
