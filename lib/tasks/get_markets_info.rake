@@ -10,6 +10,11 @@ namespace :get do
       name = market['MarketName']
       currencies = market['MarketName'].split('-')
       primary = Currency.where(name: currencies.first).first
+
+      next if !BUY_ETH_MARKET && primary.name == 'ETH'
+      next if !BUY_BITCNY_MARKET && primary.name == 'BITCNY'
+      next if !BUY_USDT_MARKET && primary.name == 'USDT'
+
       secondary = Currency.where(name: currencies.last).first
       price = market['Last']
 
