@@ -7,27 +7,26 @@ namespace :get do
     markets.each do |market|
       name = market['MarketName']
       currencies = market['MarketName'].split('-')
-      primary = Currency.where(name: currencies.first).first.id
-      secondary = Currency.where(name: currencies.last).first.id
+      primary = Currency.where(name: currencies.first).first
+      secondary = Currency.where(name: currencies.last).first
       price = market['Last']
 
       if primary.nil?
         Rake::Task['get:currencies_info'].invoke(currencies.first)
-        primary = Currency.where(name: currencies.first).id
+        primary = Currency.where(name: currencies.first).first
         end
 
       if secondary.nil?
         Rake::Task['get:currencies_info'].invoke(currencies.last)
-        secondary = Currency.where(name: currencies.first).id
+        secondary = Currency.where(name: currencies.first).first
       end
 
-      #market_record = Market.where(primary_currency_id: primary, secondary_currency_id: secondary)
       market_record = Market.where(name: name).first
 
       if market_record.present?
         market_record.update(price: price)
       else
-        Market.create(name: name,primary_currency_id: primary, secondary_currency_id: secondary, price: price)
+        Market.create(name: name, primary_currency_id: primary.id, secondary_currency_id: secondary.id, price: price)
       end
     end
   end

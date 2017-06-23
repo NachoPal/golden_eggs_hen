@@ -6,6 +6,7 @@ class CreateWallets < ActiveRecord::Migration[5.0]
       t.decimal :balance, scale: 8, precision: 16
       t.decimal :available, scale: 8, precision: 16
       t.decimal :pending, scale: 8, precision: 16
+      t.string :address
       t.timestamps
     end
   end

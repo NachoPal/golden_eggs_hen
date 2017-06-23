@@ -61,6 +61,7 @@ ActiveRecord::Schema.define(version: 20170621053924) do
     t.decimal  "balance",     precision: 16, scale: 8
     t.decimal  "available",   precision: 16, scale: 8
     t.decimal  "pending",     precision: 16, scale: 8
+    t.string   "address"
     t.datetime "created_at",                           null: false
     t.datetime "updated_at",                           null: false
     t.index ["account_id"], name: "index_wallets_on_account_id", using: :btree
