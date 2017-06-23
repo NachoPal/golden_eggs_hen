@@ -19,8 +19,9 @@ namespace :check do
       Rake::Task['check:market_ask_price'].reenable
       Rake::Task['check:market_ask_price'].invoke(args[:market_record])
 
-      #Rake::Task['sell:market'].reenable
-      #Rake::Task['sell:market'].invoke(args[:market_record].name)
+      #Aqui deberia pasar la llamada a Rake::Task['buy:market'], la cual recibe
+      #el hash con los ask que devuelve la llamada get a la API
+
     end
   end
 end

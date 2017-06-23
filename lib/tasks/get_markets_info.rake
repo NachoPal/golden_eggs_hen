@@ -29,11 +29,14 @@ namespace :get do
         Rake::Task['save:market_in_cache'].reenable
         Rake::Task['save:market_in_cache'].invoke(market_record.id, price)
 
-        #Rake::Task['check:orders_to_sell'].reenable
-        #Rake::Task['check:orders_to_sell'].invoke(market_record)
-
         Rake::Task['check:market_to_buy'].reenable
         Rake::Task['check:market_to_buy'].invoke(market_record)
+
+        #Dentro de este rake se tendra que fijar el stop limit (sell) e ir manteniendo
+        #o cancelando la orden en funcion del nuevo valor en cache
+
+        #Rake::Task['check:orders_to_sell'].reenable
+        #Rake::Task['check:orders_to_sell'].invoke(market_record)
 
         puts "====================== #{MARKET_REQUEST_COUNTER} ========================="
 

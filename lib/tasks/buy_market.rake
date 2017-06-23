@@ -12,6 +12,9 @@ namespace :buy do
     else
       false
     end
+
+    # LLamar a la orden y crear registro en la base de datos
+
 =end
 
     Order.create(account_id: 1, market_id: args[:market_record].id,
