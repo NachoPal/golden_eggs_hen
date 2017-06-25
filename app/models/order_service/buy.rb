@@ -1,4 +1,4 @@
-module Order
+module OrderService
   class Buy
 
     #TODO: I have to check if it's worth it to buy to the success ask order price

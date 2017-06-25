@@ -1,4 +1,4 @@
-module Market
+module MarketService
   class Retrieve
 
     def fire! (market, currencies, price)

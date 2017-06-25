@@ -1,4 +1,4 @@
-module Market
+module MarketService
   class SaveInCache
 
     def fire!(market_id, price)

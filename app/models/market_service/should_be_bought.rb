@@ -1,4 +1,4 @@
-module Market
+module MarketService
   class ShouldBeBought
 
     def fire!(market)
@@ -20,7 +20,7 @@ module Market
     private
 
     def already_bought?(market)
-      existing_orders = Order.joins([:market, :account]).
+      existing_orders = Order.joins([:market_service, :account]).
                               where(markets: {name: market}, accounts: {id: 1})
 
       existing_orders.present?

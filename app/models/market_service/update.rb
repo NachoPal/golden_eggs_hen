@@ -1,4 +1,4 @@
-module Market
+module MarketService
   class Update
 
     def fire!(market, price)

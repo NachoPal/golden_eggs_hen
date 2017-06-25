@@ -1,4 +1,4 @@
-module Order
+module OrderService
   class SetLostLimit
 
     def fire!(order)
