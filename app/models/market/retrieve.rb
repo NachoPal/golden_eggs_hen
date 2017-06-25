@@ -1,5 +1,5 @@
 module Market
-  class CheckIfPresent
+  class Retrieve
 
     def fire! (market, currencies, price)
       name = market['MarketName']
