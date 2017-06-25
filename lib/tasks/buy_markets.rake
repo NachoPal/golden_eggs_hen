@@ -1,7 +1,7 @@
-namespace :get do
+namespace :buy do
 
-  desc 'Get markets info'
-  task :markets_info => :environment do
+  desc 'Buy markets'
+  task :markets => :environment do
     markets = Bittrex.client.get('public/getmarketsummaries')
 
     MARKET_REQUEST_COUNTER += 1

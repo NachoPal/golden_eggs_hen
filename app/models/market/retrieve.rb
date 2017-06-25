@@ -10,7 +10,7 @@ module Market
 
         return Market.create(name: name, primary_currency_id: primary.id,
                              secondary_currency_id: secondary.id,
-                              price: price)
+                             price: price)
       end
 
       Market.where(name: name).first
@@ -26,7 +26,7 @@ module Market
 
       [primary, secondary].each do |currency|
          if currency.nil?
-           Rake::Task['get:currencies_info'].invoke(currency)
+           Rake::Task['populate:currencies'].invoke(currency)
            present = false
          end
       end

@@ -1,7 +1,7 @@
-namespace :get do
+namespace :populate do
 
-  desc 'Get currencies info'
-  task :currencies_info, [:currency_name] => :environment do |t, args|
+  desc 'Populate currencies'
+  task :currencies, [:currency_name] => :environment do |t, args|
     args.with_defaults(currency_name: 'all')
 
     currencies = Bittrex.client.get('public/getcurrencies')
