@@ -18,7 +18,7 @@ unless defined?(Rails::Console)
     #Rake::Task['sell:markets'].reenable
     #Rake::Task['sell:markets'].execute
 
-    if (args[:iteration_number] % UPDATE_MARKET_DB_EACH_X_MIN) == 0
+    if (market_request_counter % UPDATE_MARKET_DB_EACH_X_MIN) == 0
       market_request_counter = 0
     end
   end

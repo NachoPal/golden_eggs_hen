@@ -12,7 +12,7 @@ module OrderService
         if quantity >= ask_order['Quantity']
           #Here is where I should add an IF to check the final order price
           #If is not worth it I return {success: false, order: nil}
-          order = buy(ask_order['Rate'], quantity: quantity)
+          order = buy(market, ask_order['Rate'], quantity: quantity)
           break if order[:success]
         end
       end
@@ -25,7 +25,7 @@ module OrderService
       Bittrex.client.get("public/getorderbook?market=#{market}&type=sell")
     end
 
-    def buy(price, quantity)
+    def buy(market, price, quantity)
       # #============= LIVE =================================
       # order = Bittrex.client.get("market/buylimit?market=#{args[:market_record].name}&
       #                           quantity=#{args[:quantity]}&rate=#{args[:rate]}")

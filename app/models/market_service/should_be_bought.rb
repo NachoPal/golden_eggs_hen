@@ -12,7 +12,7 @@ module MarketService
       growth = ((current_price * 100) / stored_price).round(2) - 100
 
       Rails.logger.info "#{current_price} - #{stored_price}"
-      Rails.logger.info "#{args[:market_record].name} ---- #{growth}%"
+      Rails.logger.info "#{market.name} ---- #{growth}%"
 
       growth >= THRESHOLD_TO_BUY && !Order.where(market_id: market.id).present?
     end
@@ -20,7 +20,7 @@ module MarketService
     private
 
     def already_bought?(market)
-      existing_orders = Order.joins([:market_service, :account]).
+      existing_orders = Order.joins([:market, :account]).
                               where(markets: {name: market}, accounts: {id: 1})
 
       existing_orders.present?

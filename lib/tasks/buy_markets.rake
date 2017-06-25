@@ -17,11 +17,12 @@ namespace :buy do
 
       buy = MarketService::ShouldBeBought.new.fire!(market_record)
 
-      order = OrderService::Buy.new.fire!(market_record) if buy
-
-      if order[:success]
-        limit = OrderService::SetLostLimit.new.fire!(order[:record])
-        OrderService::Sell.new.fire!(order, limit[:rate], limit[:quantity])
+      if buy
+        order = OrderService::Buy.new.fire!(market_record)
+        if order[:success]
+          limit = OrderService::SetLostLimit.new.fire!(order[:record])
+          OrderService::Sell.new.fire!(order[:record], limit[:rate], limit[:quantity])
+        end
       end
 
       if market_record.price != price && (args[:iteration_number] % UPDATE_MARKET_DB_EACH_X_MIN) == 0
