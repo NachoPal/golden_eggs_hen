@@ -22,6 +22,13 @@ namespace :buy do
                  quantity: args[:quantity],
                  quantity_remaining: BigDecimal.new(0))
 
+    #Set stop lose
+    stop_lose_rate = (((100 - MARGIN_LOSE) * args[:rate]) / 100).round(8)
+
+    Rake::Task['sell:market'].reenable
+    Rake::Task['sell:market'].invoke(args[:market_record],
+                                    ask_order['Rate'], args[:quantity])
+
 
   end
 end

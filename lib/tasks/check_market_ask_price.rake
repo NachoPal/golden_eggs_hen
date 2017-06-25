@@ -13,6 +13,11 @@ namespace :check do
         Rake::Task['buy:market'].reenable
         success = Rake::Task['buy:market'].invoke(args[:market_record],
                                                   ask_order['Rate'], quantity)
+
+        Rails.logger.info "**********************************************************"
+        Rails.logger.info "********************** #{success} ************************"
+        Rails.logger.info "**********************************************************"
+
         break if success
       end
     end

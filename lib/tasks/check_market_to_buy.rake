@@ -7,9 +7,9 @@ namespace :check do
     Rails.logger.info "#{current_price} - #{stored_price}"
 
     #if current_price =! 0.0 && stored_price =! 0.0
-      growth = ((current_price * 100) / stored_price).round(2) - 100
+    growth = ((current_price * 100) / stored_price).round(2) - 100
     #else
-      #growth = 0.00
+    #growth = 0.00
     #end
 
     Rails.logger.info "#{args[:market_record].name} ---- #{growth}%"
