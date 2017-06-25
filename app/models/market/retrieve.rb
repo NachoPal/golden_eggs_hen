@@ -26,6 +26,7 @@ module Market
 
       [primary, secondary].each do |currency|
          if currency.nil?
+           Rake::Task['populate:currencies'].reenable
            Rake::Task['populate:currencies'].invoke(currency)
            present = false
          end

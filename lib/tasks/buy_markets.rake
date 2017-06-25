@@ -1,12 +1,8 @@
 namespace :buy do
 
   desc 'Buy markets'
-  task :markets => :environment do
+  task :markets, [:iteration_number] => :environment do |t, args|
     markets = Bittrex.client.get('public/getmarketsummaries')
-
-    MARKET_REQUEST_COUNTER += 1
-
-    puts "====================== #{MARKET_REQUEST_COUNTER} ========================="
 
     markets.each do |market|
 
@@ -28,7 +24,7 @@ namespace :buy do
         Order::Sell.new.fire!(order, limit[:rate], limit[:quantity])
       end
 
-      if market_record.price != price && (MARKET_REQUEST_COUNTER % UPDATE_MARKET_DB_EACH_X_MIN) == 0
+      if market_record.price != price && (args[:iteration_number] % UPDATE_MARKET_DB_EACH_X_MIN) == 0
         Market::Update.new.fire!(market_record, price)
       end
     end
