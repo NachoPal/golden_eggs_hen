@@ -1,4 +1,4 @@
-UPDATE_MARKET_DB_EACH_X_MIN = 2 * 6 # minutes * 6 times 10 seconds
+UPDATE_MARKET_DB_EACH_X_MIN = 10 * 6 # minutes * 6 times 10 seconds
 
 BTC_QUANTITY_TO_BUY = 0.0005
 

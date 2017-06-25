@@ -12,7 +12,6 @@ module MarketService
                              secondary_currency_id: secondary.id,
                              price: price)
       end
-
       Market.where(name: name).first
     end
 

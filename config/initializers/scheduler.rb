@@ -4,9 +4,15 @@ require 'rake'
 Rails.application.load_tasks
 
 s = Rufus::Scheduler.singleton
+market_request_counter = 0
 
 unless defined?(Rails::Console)
-  market_request_counter = 0
+
+  s.in '0.1s' do
+    Rake::Task['destroy:markets'].execute
+    Rake::Task['populate:markets'].execute
+    puts "====================== DESTRUYO ========================="
+  end
 
   s.every '10s' do
     market_request_counter += 1
