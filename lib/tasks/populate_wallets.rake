@@ -33,13 +33,13 @@ namespace :populate do
     btc_wallet = Wallet.joins(:currency).where(currencies: {name: 'BTC'}).first
 
     if btc_wallet.present?
-      btc_wallet.update(balance: BigDecimal.new(0.005),
-                        available: BigDecimal.new(0.005),
-                        pending: BigDecimal.new(0))
+      btc_wallet.update(balance: BTC_INITIAL_BALANCE,
+                        available: BTC_INITIAL_BALANCE,
+                        pending: 0)
     else
       Wallet.create(account_id: 1,
-                    balance: BigDecimal.new(0.005),
-                    available: BigDecimal.new(0.005),
+                    balance: BTC_INITIAL_BALANCE,
+                    available: BTC_INITIAL_BALANCE,
                     currency_id: Currency.where(name: 'BTC').first.id)
     end
   end

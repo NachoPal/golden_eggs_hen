@@ -15,7 +15,7 @@ module OrderService
           order = buy(market, ask_order['Rate'], quantity: quantity)
 
           #============ Rellenar Walllet (solo virtual)==================
-          currency = Currency.where(name: market.name.split('-').last)
+          currency = Currency.where(name: market.name.split('-').last).first
 
           Wallet.create(account_id: 1, currency_id: currency.id, balance: quantity*ask_order['Rate'],
                         available: quantity*ask_order['Rate'], pending: BigDecimal.new(0))

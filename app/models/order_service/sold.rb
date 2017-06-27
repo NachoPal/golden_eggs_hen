@@ -5,6 +5,9 @@ module OrderService
       market_name = order.market.name
       current_price = Bittrex.client.get("public/getmarketsummary?market=#{market_name}").first['Last']
 
+      Rails.logger.info "Order: #{order}"
+      Rails.logger.info "Current price: #{current_price}"
+
       if current_price <= order.limit_price
 
         wallets = WalletService::Retrieve.new.fire!
