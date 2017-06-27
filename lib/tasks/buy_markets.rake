@@ -21,13 +21,22 @@ namespace :buy do
 
       #MarketService::SaveInCache.new.fire!(market_record.id, price)
 
-      buy = MarketService::ShouldBeBought.new.fire!(market_record, price)
+      # Rake::Task['populate:wallets'].reenable
+      # #TODO: Select proper account
+      # Rake::Task['populate:wallets'].invoke(1)
 
-      if buy
-        order = OrderService::Buy.new.fire!(market_record)
-        if order[:success]
-          limit = OrderService::SetLostLimit.new.fire!(order[:record])
-          OrderService::Sell.new.fire!(order[:record], limit[:rate], limit[:quantity])
+      wallets = WalletService::Retrieve.new.fire!
+      enough = WalletService::EnoughMoney.new.fire!(wallets)
+
+      if enough
+        buy = MarketService::ShouldBeBought.new.fire!(market_record, price)
+
+        if buy
+          order = OrderService::Buy.new.fire!(market_record)
+          if order[:success]
+            limit = OrderService::SetLostLimit.new.fire!(order[:record], 'first')
+            OrderService::Sell.new.fire!(order[:record], limit[:rate], limit[:quantity])
+          end
         end
       end
 

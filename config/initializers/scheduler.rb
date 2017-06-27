@@ -12,6 +12,9 @@ unless defined?(Rails::Console)
     Order.destroy_all
     Rake::Task['destroy:markets'].execute
     Rake::Task['populate:markets'].execute
+
+    #TODO: Select proper account
+    Rake::Task['populate:wallets'].invoke(1)
     puts "====================== DESTRUYO ========================="
   end
 

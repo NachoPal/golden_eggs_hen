@@ -13,6 +13,14 @@ module OrderService
           #Here is where I should add an IF to check the final order price
           #If is not worth it I return {success: false, order: nil}
           order = buy(market, ask_order['Rate'], quantity: quantity)
+
+          #============ Rellenar Walllet (solo virtual)==================
+          currency = Currency.where(name: market.name.split('-').last)
+
+          Wallet.create(account_id: 1, currency_id: currency.id, balance: quantity*ask_order['Rate'],
+                        available: quantity*ask_order['Rate'], pending: BigDecimal.new(0))
+          #==============================================================
+
           break if order[:success]
         end
       end
