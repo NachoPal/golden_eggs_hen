@@ -8,9 +8,9 @@ module MarketService
         primary = Currency.where(name: currencies.first).first
         secondary = Currency.where(name: currencies.last).first
 
-        return Market.create(name: name, primary_currency_id: primary.id,
-                             secondary_currency_id: secondary.id,
-                             price: price)
+        Market.create(name: name, primary_currency_id: primary.id,
+                      secondary_currency_id: secondary.id,
+                      price: price)
       end
       Market.where(name: name).first
     end

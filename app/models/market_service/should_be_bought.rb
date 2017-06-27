@@ -1,27 +1,27 @@
 module MarketService
   class ShouldBeBought
 
-    def fire!(market)
+    def fire!(market, price)
 
-      return if already_bought?(market)
+      return false if already_bought?(market)
 
-      current_price = Rails.cache.fetch("markets/#{market.id}")
+      current_price = price #Rails.cache.fetch("#{market.id}/markets")
       stored_price = market.price
 
       #TODO: Take care of 0.0 prices
       growth = ((current_price * 100) / stored_price).round(2) - 100
 
-      Rails.logger.info "#{current_price} - #{stored_price}"
-      Rails.logger.info "#{market.name} ---- #{growth}%"
+      Rails.logger.info "#{growth}%"
 
-      growth >= THRESHOLD_TO_BUY && !Order.where(market_id: market.id).present?
+      growth >= THRESHOLD_TO_BUY #&& !Order.where(market_id: market.id).present?
     end
 
     private
 
     def already_bought?(market)
+      #TODO: Select proper account
       existing_orders = Order.joins([:market, :account]).
-                              where(markets: {name: market}, accounts: {id: 1})
+                              where(markets: {name: market.name}, accounts: {id: 1})
 
       existing_orders.present?
     end

@@ -6,6 +6,7 @@ namespace :buy do
 
     markets.each do |market|
 
+      #next if market['MarketName'] != 'BTC-LTC'
       currencies = market['MarketName'].split('-')
       price = market['Last']
 
@@ -13,9 +14,14 @@ namespace :buy do
 
       market_record = MarketService::Retrieve.new.fire!(market, currencies, price)
 
-      MarketService::SaveInCache.new.fire!(market_record.id, price)
+      Rails.logger.info "--------------------- #{market['MarketName']} ----------------------------"
+      Rails.logger.info "#{market_record.price}"
+      Rails.logger.info "#{price}"
+      Rails.logger.info "---------------------------------------------"
 
-      buy = MarketService::ShouldBeBought.new.fire!(market_record)
+      #MarketService::SaveInCache.new.fire!(market_record.id, price)
+
+      buy = MarketService::ShouldBeBought.new.fire!(market_record, price)
 
       if buy
         order = OrderService::Buy.new.fire!(market_record)
@@ -28,6 +34,7 @@ namespace :buy do
       if market_record.price != price && (args[:iteration_number] % UPDATE_MARKET_DB_EACH_X_MIN) == 0
         MarketService::Update.new.fire!(market_record, price)
       end
+
     end
   end
 end

@@ -5,6 +5,8 @@ namespace :populate do
 
     #Rake::Task['populate:currencies'].reenable
     #Rake::Task['populate:currencies'].invoke
+    #Rake::Task['db:migrate'].execute
+
     Rake::Task['populate:currencies'].execute
 
     markets = Bittrex.client.get('public/getmarketsummaries')
