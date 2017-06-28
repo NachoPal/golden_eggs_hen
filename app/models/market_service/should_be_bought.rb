@@ -21,7 +21,10 @@ module MarketService
     def already_bought?(market)
       #TODO: Select proper account
       existing_orders = Order.joins([:market, :account]).
-                              where(markets: {name: market.name}, accounts: {id: 1})
+                              where(markets: {name: market.name},
+                                    accounts: {id: 1},
+                                    order_type: 'LIMIT_SELL',
+                                    open: true)
 
       existing_orders.present?
     end
