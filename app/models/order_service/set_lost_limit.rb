@@ -18,10 +18,13 @@ module OrderService
       elsif set_type == 'reset'
         market_name = order.market.name
         current_price = Bittrex.client.get("public/getmarketsummary?market=#{market_name}").first['Last']
-        order_price = order.limit_price
+        #TODO: proper account id
+        buy_price = Order.where(account_id: 1,
+                                market_id: order.market_id,
+                                order_type: 'LIMIT_BUY').first.limit_price
 
-        if current_price > (order_price * (100 + (THRESHOLD_TO_SELL) * GAIN_FACTOR)) / 100
-          price = (current_price - order_price) / 2
+        if current_price >  buy_price * (100 + (THRESHOLD_TO_SELL * GAIN_FACTOR)) / 100
+          price = (current_price - buy_price) / 2
           return {rate: price, quantity: quantity}
         end
       end

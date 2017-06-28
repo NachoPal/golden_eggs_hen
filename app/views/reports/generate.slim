@@ -1,0 +1,24 @@
+h1 = @title
+
+table style= "width: 100%;"
+  tr
+    th = 'MARKET'
+    th = 'OPEN'
+    th = 'QUANTITY'
+    th = 'BUY'
+    th = 'SELL'
+    th = 'BENEFIT'
+    th = '%'
+
+  - @markets.each do |market|
+      tr
+        td = market[:name]
+        td = market[:open]
+        td = market[:quantity]
+        td = market[:buy]
+        td = market[:sell]
+        td = market[:benefit]
+        td = market[:percentage]
+
+
+
