@@ -11,7 +11,7 @@ module MarketService
       #TODO: Take care of 0.0 prices
       growth = ((current_price * 100) / stored_price).round(2) - 100
 
-      Rails.logger.info "#{growth}%"
+      #Rails.logger.info "#{growth}%"
 
       growth >= THRESHOLD_TO_BUY #&& !Order.where(market_id: market.id).present?
     end

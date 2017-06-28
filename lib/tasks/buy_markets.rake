@@ -14,10 +14,10 @@ namespace :buy do
 
       market_record = MarketService::Retrieve.new.fire!(market, currencies, price)
 
-      Rails.logger.info "--------------------- #{market['MarketName']} ----------------------------"
-      Rails.logger.info "#{market_record.price}"
-      Rails.logger.info "#{price}"
-      Rails.logger.info "---------------------------------------------"
+      # Rails.logger.info "--------------------- #{market['MarketName']} ----------------------------"
+      # Rails.logger.info "#{market_record.price}"
+      # Rails.logger.info "#{price}"
+      # Rails.logger.info "---------------------------------------------"
 
       #MarketService::SaveInCache.new.fire!(market_record.id, price)
 

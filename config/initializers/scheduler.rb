@@ -11,20 +11,6 @@ market_request_counter = 0
 unless defined?(Rails::Console)
 
   s.in '0.1s' do
-    history_file = Rails.root + 'history.pdf'
-    File.delete(history_file) if File.exist?(history_file)
-
-    #pdf = Prawn::Document.new
-    #pdf.text 'REPORT', :align => :center
-    #pdf.render_file 'history.pdf'
-
-    # pdf = HexaPDF::Document.new
-    # canvas = pdf.pages.add.canvas
-    # canvas.font('Helvetica', size: 10)
-    # canvas.text('REPORT', at: [20, 800])
-    # pdf.write('history.pdf', optimize: true)
-
-
     Order.destroy_all
     Wallet.destroy_all
     Rake::Task['destroy:markets'].execute
@@ -48,9 +34,5 @@ unless defined?(Rails::Console)
     if (market_request_counter % UPDATE_MARKET_DB_EACH_X_MIN) == 0
       market_request_counter = 0
     end
-  end
-
-  s.every '2m' do
-    @pdf.render_file "history.pdf"
   end
 end

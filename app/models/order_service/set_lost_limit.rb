@@ -23,8 +23,14 @@ module OrderService
                                 market_id: order.market_id,
                                 order_type: 'LIMIT_BUY').first.limit_price
 
-        if current_price >  buy_price * (100 + (THRESHOLD_TO_SELL * GAIN_FACTOR)) / 100
-          price = (current_price - buy_price) / 2
+        Rails.logger.info "--------#{market_name}----------"
+        Rails.logger.info "Buy Price: #{buy_price}"
+        Rails.logger.info "Current Price: #{current_price}"
+        Rails.logger.info "#{current_price > buy_price}"
+
+
+        if current_price > buy_price #* (100 + (THRESHOLD_TO_SELL * GAIN_FACTOR)) / 100
+          price = current_price + (current_price - buy_price) / 2
           return {rate: price, quantity: quantity}
         end
       end

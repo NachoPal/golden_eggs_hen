@@ -17,7 +17,7 @@ namespace :sell do
       #======================================================
 
       limit = OrderService::SetLostLimit.new.fire!(order_to_sell, 'reset')
-
+      Rails.logger.info "Limit rate: #{limit[:rate]}"
       if limit[:rate].present?
         market_to_sell_id = order_to_sell.market.id
         OrderService::Cancel.new.fire!(order_to_sell)

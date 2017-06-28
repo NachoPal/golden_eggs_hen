@@ -7,6 +7,7 @@ module OrderService
       #                   quantity=#{quantity}&rate=#{rate}")
 
       #TODO: Select proper account
+      Rails.logger.info "============= ENTRA EN CREATE ==============="
       Order.create(account_id: 1, market_id: market_id,
                    order_type: 'LIMIT_SELL', limit_price: rate,
                    quantity: quantity, open: true,
