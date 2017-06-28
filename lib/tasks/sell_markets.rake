@@ -1,7 +1,7 @@
 namespace :sell do
 
   desc 'Sell markets'
-  task :markets => :environment do
+  task :markets => :environment do |t, args|
 
     #Rake::Task['populate:wallets'].reenable
 
@@ -19,8 +19,9 @@ namespace :sell do
       limit = OrderService::SetLostLimit.new.fire!(order_to_sell, 'reset')
 
       if limit[:rate].present?
+        market_to_sell_id = order_to_sell.market.id
         OrderService::Cancel.new.fire!(order_to_sell)
-        OrderService::Sell.new.fire!(order_to_sell[:record], limit[:rate], limit[:quantity])
+        OrderService::Sell.new.fire!(market_to_sell_id, limit[:rate], limit[:quantity])
       end
 
     end

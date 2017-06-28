@@ -35,7 +35,8 @@ namespace :buy do
           order = OrderService::Buy.new.fire!(market_record)
           if order[:success]
             limit = OrderService::SetLostLimit.new.fire!(order[:record], 'first')
-            OrderService::Sell.new.fire!(order[:record], limit[:rate], limit[:quantity])
+            market_to_sell_id = order[:record].market.id
+            OrderService::Sell.new.fire!(market_to_sell_id , limit[:rate], limit[:quantity])
           end
         end
       end

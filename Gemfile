@@ -36,6 +36,12 @@ gem 'jquery-rails'
 # gem 'capistrano-rails', group: :development
 gem 'bittrex'
 gem 'rufus-scheduler'
+#gem 'prawn'
+#gem 'prawn-templates'
+#gem 'hexapdf'
+gem 'wicked_pdf'
+gem 'wkhtmltopdf-binary'
+gem 'slim'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console

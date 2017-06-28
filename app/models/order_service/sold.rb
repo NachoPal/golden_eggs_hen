@@ -10,7 +10,15 @@ module OrderService
 
       if current_price <= order.limit_price
 
+        # filename = Rails.root + 'history.pdf'
+        # Prawn::Document.generate('history.pdf', :template => filename) do
+        #   text "\nSELL ----------- #{market_name} ----------------"
+        # end
+
+
+
         wallets = WalletService::Retrieve.new.fire!
+
         btc_wallet = wallets.joins(:currency).where(currencies: {name: 'BTC'}).first
         current_balance = btc_wallet.balance
         current_available = btc_wallet.available
@@ -20,8 +28,15 @@ module OrderService
         sold_wallet = wallets.joins(:currency).
                               where(currencies: {name: order.market.name.split('-').last}).first
 
+
+        # Prawn::Document.generate('history.pdf', :template => filename) do
+        #   text "Rate: #{order.limit_price}"
+        #   text "Quantity: #{order.quantity}"
+        # end
+
+
         sold_wallet.destroy
-        order.destroy
+        order.update(open: false)
       end
     end
   end

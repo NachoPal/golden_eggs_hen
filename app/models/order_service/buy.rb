@@ -9,19 +9,38 @@ module OrderService
       ask_orders.each do |ask_order|
         quantity = BTC_QUANTITY_TO_BUY / ask_order['Rate']
 
-        if quantity >= ask_order['Quantity']
+        if quantity <= ask_order['Quantity']
           #Here is where I should add an IF to check the final order price
           #If is not worth it I return {success: false, order: nil}
-          order = buy(market, ask_order['Rate'], quantity: quantity)
+          order = buy(market, ask_order['Rate'], quantity)
+
+          # filename = Rails.root + 'history.pdf'
+          # Prawn::Document.generate('history.pdf', :template => filename) do
+          #   text "\nBUY ----------- #{market.name} ----------------"
+          # end
 
           #============ Rellenar Walllet (solo virtual)==================
           currency = Currency.where(name: market.name.split('-').last).first
 
           Wallet.create(account_id: 1, currency_id: currency.id, balance: quantity*ask_order['Rate'],
                         available: quantity*ask_order['Rate'], pending: BigDecimal.new(0))
+
+          #Restar inversion de BTC wallet
+
+          btc_wallet = Wallet.joins(:currency).where(currencies: {name: 'BTC'}).first
+          btc_wallet.update(available: btc_wallet.available - quantity*ask_order['Rate'],
+                            balance: btc_wallet.balance - quantity*ask_order['Rate'])
+
+          # Prawn::Document.generate('history.pdf', :template => filename) do
+          #   text "Rate: #{ask_order['Rate']}"
+          #   text "Quantity: #{quantity*ask_order['Rate']}"
+          # end
+
           #==============================================================
 
           break if order[:success]
+        else
+          next
         end
       end
       order
@@ -49,7 +68,8 @@ module OrderService
       order_record = Order.create(account_id: 1, market_id: market.id,
                                   order_type: 'LIMIT_BUY', limit_price: price,
                                   quantity: quantity,
-                                  quantity_remaining: BigDecimal.new(0))
+                                  quantity_remaining: BigDecimal.new(0),
+                                  open: false)
 
       {success: true, record: order_record}
     end
