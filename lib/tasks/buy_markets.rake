@@ -25,8 +25,8 @@ namespace :buy do
       # #TODO: Select proper account
       # Rake::Task['populate:wallets'].invoke(1)
 
-      wallets = WalletService::Retrieve.new.fire!
-      enough = WalletService::EnoughMoney.new.fire!(wallets)
+      #wallets = WalletService::Retrieve.new.fire!
+      enough = WalletService::EnoughMoney.new.fire!(BASE_MARKET)
 
       if enough
         buy = MarketService::ShouldBeBought.new.fire!(market_record, price)
@@ -34,9 +34,10 @@ namespace :buy do
         if buy
           order = OrderService::Buy.new.fire!(market_record)
           if order[:success]
-            limit = OrderService::SetLostLimit.new.fire!(order[:record], 'first')
-            market_to_sell_id = order[:record].market.id
-            OrderService::Sell.new.fire!(market_to_sell_id , limit[:rate], limit[:quantity])
+            TransactionService::Create.new.fire!(order[:record])
+            #limit = OrderService::SetLostLimit.new.fire!(order[:record], 'first')
+            #market_to_sell_id = order[:record].market.id
+            #OrderService::Sell.new.fire!(market_to_sell_id , limit[:rate], limit[:quantity])
           end
         end
       end

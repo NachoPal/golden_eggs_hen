@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170621053924) do
+ActiveRecord::Schema.define(version: 20170629085625) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -53,6 +53,18 @@ ActiveRecord::Schema.define(version: 20170621053924) do
     t.datetime "updated_at",                                  null: false
     t.index ["account_id"], name: "index_orders_on_account_id", using: :btree
     t.index ["market_id"], name: "index_orders_on_market_id", using: :btree
+  end
+
+  create_table "transactions", force: :cascade do |t|
+    t.integer  "buy_order_id"
+    t.integer  "sell_order_id"
+    t.decimal  "quantity",      precision: 16, scale: 8
+    t.decimal  "benefit",       precision: 16, scale: 8
+    t.decimal  "percentage",    precision: 16, scale: 8
+    t.datetime "created_at",                             null: false
+    t.datetime "updated_at",                             null: false
+    t.index ["buy_order_id"], name: "index_transactions_on_buy_order_id", using: :btree
+    t.index ["sell_order_id"], name: "index_transactions_on_sell_order_id", using: :btree
   end
 
   create_table "wallets", force: :cascade do |t|

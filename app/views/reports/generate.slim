@@ -10,15 +10,15 @@ table style= "width: 100%;"
     th = 'BENEFIT'
     th = '%'
 
-  - @markets.each do |market|
+  - @transactions.each do |transaction|
       tr
-        td = market[:name]
-        td = market[:open]
-        td = market[:quantity]
-        td = market[:buy]
-        td = market[:sell]
-        td = market[:benefit]
-        td = market[:percentage]
+        td = transaction[:name]
+        td = transaction[:open]
+        td = transaction[:quantity]
+        td = transaction[:buy]
+        td = transaction[:sell]
+        td = transaction[:benefit]
+        td = transaction[:percentage]
 
 
 

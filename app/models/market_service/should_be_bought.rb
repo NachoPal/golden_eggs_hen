@@ -11,7 +11,7 @@ module MarketService
       #TODO: Take care of 0.0 prices
       growth = ((current_price * 100) / stored_price).round(2) - 100
 
-      #Rails.logger.info "#{growth}%"
+      Rails.logger.info "Market: #{market.name} --- #{growth}%"
 
       growth >= THRESHOLD_TO_BUY #&& !Order.where(market_id: market.id).present?
     end
@@ -20,13 +20,17 @@ module MarketService
 
     def already_bought?(market)
       #TODO: Select proper account
-      existing_orders = Order.joins([:market, :account]).
-                              where(markets: {name: market.name},
-                                    accounts: {id: 1},
-                                    order_type: 'LIMIT_SELL',
-                                    open: true)
+      # existing_orders = Order.joins([:market, :account]).
+      #                         where(markets: {name: market.name},
+      #                               accounts: {id: 1},
+      #                               order_type: 'LIMIT_SELL',
+      #                               open: true)
 
-      existing_orders.present?
+      secondary_currency_id = market.secondary_currency_id
+
+      wallet = Wallet.where(currency_id: secondary_currency_id)
+
+      wallet.present?
     end
   end
 end

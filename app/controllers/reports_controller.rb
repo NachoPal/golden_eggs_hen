@@ -2,28 +2,18 @@ class ReportsController < ApplicationController
 
   def generate
 
-    orders_buy = Order.where(account_id: params[:id], order_type: 'LIMIT_BUY').
-                       order(created_at: :asc)
+    @transactions = []
 
-    @markets = []
-
-    orders_buy.each do |order_buy|
-      order_sell = Order.where(account_id: params[:id],
-                               order_type: 'LIMIT_SELL',
-                               market_id: order_buy.market_id).first
-
-      quantity = order_buy.quantity
-      benefit = order_buy.quantity * (order_sell.limit_price - order_buy.limit_price)
-      percentage = (((order_sell.limit_price * 100) / order_buy.limit_price) - 100)
-
-      @markets << {name: order_buy.market.name,
-                   open: order_sell.open,
-                   quantity: quantity,
-                   buy: order_buy.limit_price,
-                   sell: order_sell.limit_price,
-                   benefit: order_sell.open ? nil : BigDecimal.new(benefit).floor(8),
-                   percentage: order_sell.open ? nil : BigDecimal.new(percentage).floor(2)}
+    Transaction.all.each do |transaction|
+      @transactions << {name: transaction.market.name,
+                        open: !transaction.sell_order.present?,
+                        quantity: transaction.quantity,
+                        buy: transaction.buy_order.limit_price,
+                        sell: transaction.sell_order.present? ? transaction.sell_order.limit_price : nil,
+                        benefit: transaction.benefit,
+                        percentage: transaction.percentage}
     end
+
 
     @title = 'REPORT'
 

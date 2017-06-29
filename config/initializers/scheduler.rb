@@ -13,6 +13,8 @@ unless defined?(Rails::Console)
   s.in '0.1s' do
     Order.destroy_all
     Wallet.destroy_all
+    Transaction.destroy_all
+
     Rake::Task['destroy:markets'].execute
     Rake::Task['populate:markets'].execute
 

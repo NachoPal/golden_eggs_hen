@@ -71,6 +71,13 @@ module OrderService
                                   quantity_remaining: BigDecimal.new(0),
                                   open: false)
 
+      Rails.logger.info "---------- Buy -------------"
+      Rails.logger.info "Market: #{market.name}"
+      Rails.logger.info "Stored Price: #{market.price}"
+      Rails.logger.info "Current Price: #{price}"
+      Rails.logger.info "----------------------------"
+
+
       {success: true, record: order_record}
     end
   end
