@@ -8,7 +8,7 @@ namespace :buy do
 
       #next if market['MarketName'] != 'BTC-LTC'
       currencies = market['MarketName'].split('-')
-      price = market['Last']
+      price = market['Bid']
 
       next if MarketService::Exclude.new.fire!(currencies)
 

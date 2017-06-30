@@ -22,14 +22,8 @@ module OrderService
           #============ Rellenar Walllet (solo virtual)==================
           currency = Currency.where(name: market.name.split('-').last).first
 
-          Wallet.create(account_id: 1, currency_id: currency.id, balance: quantity*ask_order['Rate'],
-                        available: quantity*ask_order['Rate'], pending: BigDecimal.new(0))
+          WalletService::Create.new.fire!(currency, quantity, ask_order['Rate'])
 
-          #Restar inversion de BTC wallet
-
-          btc_wallet = Wallet.joins(:currency).where(currencies: {name: 'BTC'}).first
-          btc_wallet.update(available: btc_wallet.available - quantity*ask_order['Rate'],
-                            balance: btc_wallet.balance - quantity*ask_order['Rate'])
 
           # Prawn::Document.generate('history.pdf', :template => filename) do
           #   text "Rate: #{ask_order['Rate']}"

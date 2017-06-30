@@ -36,10 +36,11 @@ namespace :sell do
       sell = MarketService::ShouldBeSold.new.fire!(wallet, BASE_MARKET)
 
       if sell
-        order = OrderService::Sell.new.fire!(wallet, 'BTC')
+        order = OrderService::Sell.new.fire!(wallet, BASE_MARKET)
         if order[:success]
-          TransactionService::Close.new.fire!(order[:buy_record], order[:sell_record])
-          WalletService::Destroy.new.fire!(wallet)
+          transaction = TransactionService::Close.new.fire!(order[:buy_record], order[:sell_record])
+          WalletService::Destroy.new.fire!(wallet, order[:sell_record])
+          #MarketService::Update(transaction.market, transaction.sell_order.limit_price)
         end
       end
     end
