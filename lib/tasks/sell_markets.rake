@@ -40,7 +40,9 @@ namespace :sell do
         if order[:success]
           transaction = TransactionService::Close.new.fire!(order[:buy_record], order[:sell_record])
           WalletService::Destroy.new.fire!(wallet, order[:sell_record])
-          #MarketService::Update(transaction.market, transaction.sell_order.limit_price)
+
+          current_price = Bittrex.client.get("public/getmarketsummary?market=#{transaction.market.name}").first['Last']
+          MarketService::Update.new.fire!(transaction.market, current_price)
         end
       end
     end

@@ -8,10 +8,10 @@ module MarketService
 
       market_name = buy_order.market.name
       market = Bittrex.client.get("public/getmarketsummary?market=#{market_name}").first
-      market_price = market['Last']
+      market_price = market['Bid']
 
-      lose_money = market_price <= ((100 - THRESHOLD_TO_SELL) * buy_order_price) / 100
-      gain_money = market_price >= ((100 + THRESHOLD_TO_BUY) * buy_order_price) / 100
+      lose_money = market_price <= ((100 - THRESHOLD_OF_LOST) * buy_order_price) / 100
+      gain_money = market_price >= ((100 + THRESHOLD_OF_GAIN) * buy_order_price) / 100
 
       lose_money || gain_money
     end

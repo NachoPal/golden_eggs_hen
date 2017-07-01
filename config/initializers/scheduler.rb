@@ -23,7 +23,7 @@ unless defined?(Rails::Console)
     puts "====================== DESTRUYO ========================="
   end
 
-  s.every '10s' do
+  s.every '5s' do
     market_request_counter += 1
     puts "====================== #{market_request_counter} ========================="
 

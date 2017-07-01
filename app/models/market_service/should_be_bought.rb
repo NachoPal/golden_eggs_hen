@@ -13,7 +13,7 @@ module MarketService
 
       Rails.logger.info "Market: #{market.name} --- #{growth}%"
 
-      growth >= THRESHOLD_TO_BUY #&& !Order.where(market_id: market.id).present?
+      growth >= THRESHOLD_OF_GROWTH #&& !Order.where(market_id: market.id).present?
     end
 
     private
