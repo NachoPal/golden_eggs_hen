@@ -25,7 +25,7 @@ module OrderService
           market_id = get_market_to_sell_id(market_name)
           buy_record = get_peer_buy_order(market_id)
 
-          lose_threshold_price = ((100 - THRESHOLD_OF_LOST) * buy_record.price) / 100
+          lose_threshold_price = ((100 - THRESHOLD_OF_LOST) * buy_record.limit_price) / 100
 
           if bid_order['Rate'] >= lose_threshold_price
             order = sell(market_name, bid_order['Rate'], wallet.balance, true)
@@ -67,7 +67,7 @@ module OrderService
                                   quantity_remaining: BigDecimal.new(0),
                                   open: !success)
 
-      {success: success, record: order_record}
+      {success: success, sell_record: order_record}
     end
 
     def get_market_to_sell_id(name)

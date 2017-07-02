@@ -13,6 +13,7 @@ namespace :buy do
       price = market['Last']
       #ask_price = market['Ask']
 
+
       next if MarketService::Exclude.new.fire!(currencies, market['Volume'], percentile)
 
       market_record = MarketService::Retrieve.new.fire!(market, currencies, price)
@@ -32,8 +33,7 @@ namespace :buy do
       enough = WalletService::EnoughMoney.new.fire!(BASE_MARKET)
 
       if enough
-        trend = MarketService::Trend.new.fire!(market['MarketName'])
-        buy = MarketService::ShouldBeBought.new.fire!(market_record, price, trend)
+        buy = MarketService::ShouldBeBought.new.fire!(market_record, price)
 
         if buy
           order = OrderService::Buy.new.fire!(market_record)

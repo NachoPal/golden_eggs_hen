@@ -2,6 +2,7 @@ module MarketService
   class Exclude
 
     def fire!(currencies, volume, percentile)
+      currencies.last == 'XEL' ||
       (volume > percentile) ||
       (!BUY_ETH_MARKET && currencies.first == 'ETH') ||
       (!BUY_BITCNY_MARKET && currencies.first == 'BITCNY') ||
