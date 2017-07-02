@@ -1,9 +1,10 @@
 module MarketService
   class ShouldBeBought
 
-    def fire!(market, price)
+    def fire!(market, price, trend)
 
       return false if already_bought?(market)
+      return false if not_proper_history(trend[:period], trend[:growth], trend[:spread])
 
       current_price = price #Rails.cache.fetch("#{market.id}/markets")
       stored_price = market.price
@@ -31,6 +32,12 @@ module MarketService
       wallet = Wallet.where(currency_id: secondary_currency_id)
 
       wallet.present?
+    end
+
+    def not_proper_history(period, growth, spread)
+
+      growth < (PERIOD_GROWTH / 60) * period
+      #good_spread = spread <
     end
   end
 end

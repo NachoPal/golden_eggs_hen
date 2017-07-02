@@ -4,6 +4,8 @@ namespace :buy do
   task :markets, [:iteration_number] => :environment do |t, args|
     markets = Bittrex.client.get('public/getmarketsummaries')
 
+    percentile = MarketService::PercentileVolume.new.fire!(markets, PERCENTILE)
+
     markets.each do |market|
 
       #next if market['MarketName'] != 'BTC-LTC'
@@ -11,7 +13,7 @@ namespace :buy do
       price = market['Last']
       #ask_price = market['Ask']
 
-      next if MarketService::Exclude.new.fire!(currencies)
+      next if MarketService::Exclude.new.fire!(currencies, market['Volume'], percentile)
 
       market_record = MarketService::Retrieve.new.fire!(market, currencies, price)
 
@@ -30,7 +32,8 @@ namespace :buy do
       enough = WalletService::EnoughMoney.new.fire!(BASE_MARKET)
 
       if enough
-        buy = MarketService::ShouldBeBought.new.fire!(market_record, price)
+        trend = MarketService::Trend.new.fire!(market['MarketName'])
+        buy = MarketService::ShouldBeBought.new.fire!(market_record, price, trend)
 
         if buy
           order = OrderService::Buy.new.fire!(market_record)

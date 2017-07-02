@@ -3,41 +3,26 @@ module OrderService
 
     def fire!(order)
       market_name = order.market.name
-      current_price = Bittrex.client.get("public/getmarketsummary?market=#{market_name}").first['Last']
+      price_history = Bittrex.client.get("public/getmarkethistory?market=#{market_name}")
 
-      #Rails.logger.info "Order: #{order}"
-      #Rails.logger.info "Current price: #{current_price}"
+      sold = sold_in_the_last_period(price_history, order)
 
-      if current_price <= order.limit_price
+      order.update(open: false) if sold
+    end
 
-        # filename = Rails.root + 'history.pdf'
-        # Prawn::Document.generate('history.pdf', :template => filename) do
-        #   text "\nSELL ----------- #{market_name} ----------------"
-        # end
+    def sold_in_the_last_period(price_history, order)
 
+      price_history.each do |transaction|
 
+        time = "#{transaction['TimeStamp'].split('.').first}+00:00"
 
-        wallets = WalletService::Retrieve.new.fire!
-
-        btc_wallet = wallets.joins(:currency).where(currencies: {name: 'BTC'}).first
-        current_balance = btc_wallet.balance
-        current_available = btc_wallet.available
-        btc_wallet.update(balance: current_balance + order.limit_price,
-                          available: current_available + order.limit_price)
-
-        sold_wallet = wallets.joins(:currency).
-                              where(currencies: {name: order.market.name.split('-').last}).first
-
-
-        # Prawn::Document.generate('history.pdf', :template => filename) do
-        #   text "Rate: #{order.limit_price}"
-        #   text "Quantity: #{order.quantity}"
-        # end
-
-
-        sold_wallet.destroy
-        order.update(open: false)
+        if DateTime.rfc3339(time) > Order.last.updated_at.to_datetime
+          return true if transaction['Price'] > order.limit_price
+        else
+          return false
+        end
       end
+      false
     end
   end
 end

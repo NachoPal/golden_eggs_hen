@@ -21,14 +21,20 @@ module OrderService
 
       bid_orders.each do |bid_order|
         if bid_order['Quantity'] >= wallet.balance
-          order = sell(market_name, bid_order['Rate'], wallet.balance)
 
-          if order[:success]
-            market_id = get_market_to_sell_id(market_name)
-            buy_record = get_peer_buy_order(market_id)
-            order.merge!({buy_record: buy_record})
-            break
+          market_id = get_market_to_sell_id(market_name)
+          buy_record = get_peer_buy_order(market_id)
+
+          lose_threshold_price = ((100 - THRESHOLD_OF_LOST) * buy_record.price) / 100
+
+          if bid_order['Rate'] >= lose_threshold_price
+            order = sell(market_name, bid_order['Rate'], wallet.balance, true)
+          else
+            order = sell(market_name, lose_threshold_price, wallet.balance, false)
           end
+
+          order.merge!({buy_record: buy_record})
+          break
         else
           next
         end
@@ -42,7 +48,7 @@ module OrderService
       Bittrex.client.get("public/getorderbook?market=#{market}&type=buy")
     end
 
-    def sell(market, price, quantity)
+    def sell(market, price, quantity, success)
     # #============= LIVE =================================
     # order = Bittrex.client.get("market/selllimit?market=#{args[:market_record].name}&
     #                           quantity=#{args[:quantity]}&rate=#{args[:rate]}")
@@ -54,14 +60,14 @@ module OrderService
     #   {success: false, record: nil}
     # end
 
-    #TODO: Select proper account
-    order_record = Order.create(account_id: 1, market_id: Market.where(name: market).first.id,
-                                order_type: 'LIMIT_SELL', limit_price: price,
-                                quantity: quantity,
-                                quantity_remaining: BigDecimal.new(0),
-                                open: false)
+      #TODO: Select proper account
+      order_record = Order.create(account_id: 1, market_id: Market.where(name: market).first.id,
+                                  order_type: 'LIMIT_SELL', limit_price: price,
+                                  quantity: quantity,
+                                  quantity_remaining: BigDecimal.new(0),
+                                  open: !success)
 
-    {success: true, sell_record: order_record}
+      {success: success, record: order_record}
     end
 
     def get_market_to_sell_id(name)
