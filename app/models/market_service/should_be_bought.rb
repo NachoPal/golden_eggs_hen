@@ -5,7 +5,7 @@ module MarketService
 
       return false if already_bought?(market)
 
-      current_price = price #Rails.cache.fetch("#{market.id}/markets")
+      current_price = price
       stored_price = market.price
 
       #TODO: Take care of 0.0 prices
@@ -13,7 +13,7 @@ module MarketService
 
       Rails.logger.info "Market: #{market.name} --- #{growth}%"
 
-      if growth >= THRESHOLD_OF_GROWTH #&& !Order.where(market_id: market.id).present?
+      if growth >= THRESHOLD_OF_GROWTH
         trend = MarketService::Trend.new.fire!(market.name)
         return false unless trend[:info]
         return has_proper_trend(trend[:period], trend[:growth], trend[:spread])
@@ -25,23 +25,14 @@ module MarketService
     private
 
     def already_bought?(market)
-      #TODO: Select proper account
-      # existing_orders = Order.joins([:market, :account]).
-      #                         where(markets: {name: market.name},
-      #                               accounts: {id: 1},
-      #                               order_type: 'LIMIT_SELL',
-      #                               open: true)
-
       secondary_currency_id = market.secondary_currency_id
 
       wallet = Wallet.where(currency_id: secondary_currency_id)
-
       wallet.present?
     end
 
     def has_proper_trend(period, growth, spread)
       growth > (PERIOD_GROWTH / 60) * period
-      #good_spread = spread <
     end
   end
 end

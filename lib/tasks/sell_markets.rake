@@ -11,7 +11,6 @@ namespace :sell do
       MarketService::Update.new.fire!(market, current_price)
     end
 
-
     wallets = WalletService::Retrieve.new.fire!
 
     wallets.each do |wallet|
