@@ -28,12 +28,34 @@ namespace :sell do
     wallets = WalletService::Retrieve.new.fire!
 
     wallets.each do |wallet|
-      next if wallet.currency.name == BASE_MARKET
+      currency = wallet.currency.name
+      market_name = "#{BASE_MARKET}-#{currency}"
+      market = Market.where(name: market_name).first
 
-      sell = MarketService::ShouldBeSold.new.fire!(wallet, BASE_MARKET)
+      next if currency == BASE_MARKET
+
+
+      buy_order = OrderService::FindBuy.new.fire!(wallet)
+
+      open_sell = OrderService::SellExists.new.fire!(buy_order)
+
+      if open_sell[:exists]
+        OrderService::Sold.new.fire!(open_sell[:order])
+      else
+        if MarketService::ShouldBeSold.new.fire!(buy_order)
+          OrderService::Sell.new.fire!(buy_order)
+        end
+      end
+
+
+
+
 
       if sell
-        order = OrderService::Sell.new.fire!(wallet, BASE_MARKET)
+        if OrderService::SellExist.new.fire
+
+        end
+        order = OrderService::Sell.new.fire!(sell[:buy_order], BASE_MARKET)
         if order[:success]
           transaction = TransactionService::Close.new.fire!(order[:buy_record], order[:sell_record])
           WalletService::Destroy.new.fire!(wallet, order[:sell_record])

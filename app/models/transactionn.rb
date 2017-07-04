@@ -5,4 +5,12 @@ class Transactionn < ApplicationRecord
 
   belongs_to :market
   belongs_to :account
+
+  def sells
+    self.orderrs.sells
+  end
+
+  def buys
+    self.orderrs.buys
+  end
 end

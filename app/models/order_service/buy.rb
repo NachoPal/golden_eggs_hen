@@ -4,7 +4,6 @@ module OrderService
     #TODO: I have to check if it's worth it to buy to the success ask order price
     def fire!(market)
       ask_orders = check_ask_orders(market.name)
-      order = {success: false, record: nil}
 
       ask_orders.each do |ask_order|
         quantity = BTC_QUANTITY_TO_BUY / ask_order['Rate']
@@ -12,7 +11,7 @@ module OrderService
         if quantity <= ask_order['Quantity']
           #Here is where I should add an IF to check the final order price
           #If is not worth it I return {success: false, order: nil}
-          order = buy(market, ask_order['Rate'], quantity)
+          success = buy(market, ask_order['Rate'], quantity)
 
           # filename = Rails.root + 'history.pdf'
           # Prawn::Document.generate('history.pdf', :template => filename) do
@@ -32,12 +31,11 @@ module OrderService
 
           #==============================================================
 
-          break if order[:success]
+          break if success
         else
           next
         end
       end
-      order
     end
 
     private
@@ -58,12 +56,16 @@ module OrderService
       #   {success: false, record: nil}
       # end
 
+      transaction = TransactionService::Create.new.fire!(market)
+
       #TODO: Select proper account
-      order_record = Order.create(account_id: 1, market_id: market.id,
-                                  order_type: 'LIMIT_BUY', limit_price: price,
-                                  quantity: quantity,
-                                  quantity_remaining: BigDecimal.new(0),
-                                  open: false)
+
+      buy_order = Buy.new(limit_price: price,
+                          quantity: quantity,
+                          quantity_remaining: BigDecimal.new(0),
+                          open: false)
+
+      transaction << buy_order
 
       Rails.logger.info "---------- Buy -------------"
       Rails.logger.info "Market: #{market.name}"
@@ -71,8 +73,7 @@ module OrderService
       Rails.logger.info "Current Price: #{price}"
       Rails.logger.info "----------------------------"
 
-
-      {success: true, record: order_record}
+      true
     end
   end
 end

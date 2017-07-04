@@ -1,8 +1,10 @@
 module TransactionService
   class Create
 
-    def fire!(buy_record)
-      Transaction.create(buy_order_id: buy_record.id, quantity: buy_record.quantity)
+    def fire!(market)
+      t = Transactionn.new(market_id: market.id, account_id: 1)
+      t.save
+      t
     end
   end
 end

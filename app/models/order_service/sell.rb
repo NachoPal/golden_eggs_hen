@@ -1,6 +1,6 @@
 module OrderService
   class Sell
-    def fire!(wallet, currency_exchange)
+    def fire!(buy_order)
 
       #============ LIVE ==============
       # Bittrex.client.get("market/selllimit?market=#{order.market.name}&
@@ -16,7 +16,7 @@ module OrderService
       order = {success: false, sell_record: nil}
 
       currency = wallet.currency.name
-      market_name = "#{currency_exchange}-#{currency}"
+      market_name = "#{BASE_MARKET}-#{currency}"
       bid_orders = check_bid_orders(market_name)
 
       bid_orders.each do |bid_order|
@@ -61,11 +61,15 @@ module OrderService
     # end
 
       #TODO: Select proper account
+      sell_order = Sell.new(limit_price: price,
+                            quantity: quantity,
+                            quantity_remaining: BigDecimal.new(0),
+                            open: !success)
+
+
+
       order_record = Order.create(account_id: 1, market_id: Market.where(name: market).first.id,
-                                  order_type: 'LIMIT_SELL', limit_price: price,
-                                  quantity: quantity,
-                                  quantity_remaining: BigDecimal.new(0),
-                                  open: !success)
+                                  order_type: 'LIMIT_SELL',
 
       {success: success, sell_record: order_record}
     end
