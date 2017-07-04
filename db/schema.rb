@@ -42,8 +42,6 @@ ActiveRecord::Schema.define(version: 20170629085625) do
 
   create_table "orders", force: :cascade do |t|
     t.string   "uuid"
-    t.integer  "account_id"
-    t.integer  "market_id"
     t.string   "order_type"
     t.decimal  "quantity",           precision: 16, scale: 8
     t.decimal  "quantity_remaining", precision: 16, scale: 8
@@ -51,19 +49,20 @@ ActiveRecord::Schema.define(version: 20170629085625) do
     t.boolean  "open"
     t.datetime "created_at",                                  null: false
     t.datetime "updated_at",                                  null: false
-    t.index ["account_id"], name: "index_orders_on_account_id", using: :btree
-    t.index ["market_id"], name: "index_orders_on_market_id", using: :btree
   end
 
   create_table "transactions", force: :cascade do |t|
+    t.integer  "account_id"
+    t.integer  "market_id"
     t.integer  "buy_order_id"
     t.integer  "sell_order_id"
-    t.decimal  "quantity",      precision: 16, scale: 8
     t.decimal  "benefit",       precision: 16, scale: 8
     t.decimal  "percentage",    precision: 16, scale: 8
     t.datetime "created_at",                             null: false
     t.datetime "updated_at",                             null: false
+    t.index ["account_id"], name: "index_transactions_on_account_id", using: :btree
     t.index ["buy_order_id"], name: "index_transactions_on_buy_order_id", using: :btree
+    t.index ["market_id"], name: "index_transactions_on_market_id", using: :btree
     t.index ["sell_order_id"], name: "index_transactions_on_sell_order_id", using: :btree
   end
 

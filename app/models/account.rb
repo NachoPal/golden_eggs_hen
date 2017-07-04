@@ -1,4 +1,4 @@
 class Account < ApplicationRecord
   has_many :wallets
-  has_many :orders
+  has_many :transactions
 end

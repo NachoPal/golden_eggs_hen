@@ -38,3 +38,4 @@ unless defined?(Rails::Console)
     end
   end
 end
+
