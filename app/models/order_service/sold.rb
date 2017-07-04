@@ -1,13 +1,14 @@
 module OrderService
   class Sold
 
-    def fire!(order)
-      market_name = order.market.name
+    def fire!(order, market_name)
       price_history = Bittrex.client.get("public/getmarkethistory?market=#{market_name}")
 
       sold = sold_in_the_last_period(price_history, order)
 
       order.update(open: false) if sold
+
+      sold
     end
 
     def sold_in_the_last_period(price_history, order)

@@ -4,12 +4,12 @@ class ReportsController < ApplicationController
 
     @transactions = []
 
-    Transaction.all.each do |transaction|
+    Transactionn.all.each do |transaction|
       @transactions << {name: transaction.market.name,
-                        open: !transaction.sell_order.present?,
-                        quantity: transaction.quantity,
-                        buy: transaction.buy_order.limit_price,
-                        sell: transaction.sell_order.present? ? transaction.sell_order.limit_price : nil,
+                        open: !transaction.sells.present?,
+                        quantity: transaction.buys.first.quantity,
+                        buy: transaction.buys.first.limit_price,
+                        sell: transaction.sells.present? ? transaction.sells.first.limit_price : nil,
                         benefit: transaction.benefit,
                         percentage: transaction.percentage}
     end

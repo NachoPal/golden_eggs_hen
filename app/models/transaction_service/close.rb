@@ -1,14 +1,13 @@
 module TransactionService
   class Close
 
-    def fire!(buy_record, sell_record)
+    def fire!(transaction)
+      buy_record = transaction.buys.first
+      sell_record = transaction.sells.first
+
       result = calculate_statistics(buy_record, sell_record)
 
-      Transaction.where(buy_order_id: buy_record.id, sell_order_id: nil).last.
-                  update(sell_order_id: sell_record.id, benefit: result[:benefit],
-                         percentage: result[:percentage])
-
-      Transaction.where(buy_order_id: buy_record.id, sell_order_id: sell_record.id).last
+      transaction.update(benefit: result[:benefit], percentage: result[:percentage])
     end
 
     def calculate_statistics(buy_record, sell_record)

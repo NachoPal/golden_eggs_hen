@@ -60,12 +60,12 @@ module OrderService
 
       #TODO: Select proper account
 
-      buy_order = Buy.new(limit_price: price,
+      buy_order = Orderr::Buy.new(limit_price: price,
                           quantity: quantity,
                           quantity_remaining: BigDecimal.new(0),
                           open: false)
 
-      transaction << buy_order
+      transaction.orderrs << buy_order
 
       Rails.logger.info "---------- Buy -------------"
       Rails.logger.info "Market: #{market.name}"

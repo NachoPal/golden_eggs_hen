@@ -1,7 +1,8 @@
 module WalletService
   class Destroy
 
-    def fire!(wallet, sell_record)
+    def fire!(wallet, transaction)
+      sell_record = transaction.sells.first
       quantity = sell_record.quantity
       rate = sell_record.limit_price
 
