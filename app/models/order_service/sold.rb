@@ -17,8 +17,8 @@ module OrderService
 
         time = "#{transaction['TimeStamp'].split('.').first}+00:00"
 
-        if DateTime.rfc3339(time) > Order.last.updated_at.to_datetime
-          return true if transaction['Price'] > order.limit_price
+        if DateTime.rfc3339(time) > order.updated_at.to_datetime
+          return true if transaction['Price'] >= order.limit_price
         else
           return false
         end

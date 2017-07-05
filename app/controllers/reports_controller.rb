@@ -6,7 +6,7 @@ class ReportsController < ApplicationController
 
     Transactionn.all.each do |transaction|
       @transactions << {name: transaction.market.name,
-                        open: !transaction.sells.present?,
+                        open: transaction.sells.present? ? transaction.sells.first.open : true,
                         quantity: transaction.buys.first.quantity,
                         buy: transaction.buys.first.limit_price,
                         sell: transaction.sells.present? ? transaction.sells.first.limit_price : nil,

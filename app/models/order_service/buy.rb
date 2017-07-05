@@ -9,17 +9,18 @@ module OrderService
 
         if quantity <= ask_order['Quantity']
 
-          success = buy(market, ask_order['Rate'], quantity)
+          bought = buy(market, ask_order['Rate'], quantity)
 
           currency = Currency.where(name: market.name.split('-').last).first
 
-          WalletService::Create.new.fire!(currency, quantity, ask_order['Rate'])
+          new_wallet = WalletService::Create.new.fire!(currency, quantity, ask_order['Rate'])
 
-          break if success
+          return bought.merge!({wallet: new_wallet}) if bought[:success]
         else
           next
         end
       end
+      {success: false}
     end
 
     private
@@ -43,7 +44,8 @@ module OrderService
       Rails.logger.info "Stored Price: #{market.price}"
       Rails.logger.info "Current Price: #{price}"
       Rails.logger.info "----------------------------"
-      true
+
+      {success: true, order: buy_order}
     end
   end
 end

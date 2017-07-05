@@ -2,11 +2,11 @@ module OrderService
   class Cancel
 
     def fire!(order)
-      #========== LIVE ================
-      #Bittrex.client.get("market/cancel?uuid=#{order.uuid}")
-      #================================
+      sell_order = order.transactionn.sells
 
-      order.destroy
+      if sell_order.present?
+        sell_order.first.destroy
+      end
     end
   end
 end

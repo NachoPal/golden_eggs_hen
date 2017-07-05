@@ -17,7 +17,11 @@ namespace :buy do
 
       if WalletService::EnoughMoney.new.fire!(BASE_MARKET)
         if MarketService::ShouldBeBought.new.fire!(market_record, price)
-          OrderService::Buy.new.fire!(market_record)
+          bought = OrderService::Buy.new.fire!(market_record)
+
+          if bought[:success]
+            OrderService::Sell.new.fire!(bought[:order], bought[:wallet], market_record, true)
+          end
         end
       end
 
