@@ -6,12 +6,14 @@ namespace :buy do
 
     percentile = MarketService::PercentileVolume.new.fire!(markets, PERCENTILE)
 
+    Rails.logger.info "Percentile: #{percentile}"
+
     markets.each do |market|
 
       currencies = market['MarketName'].split('-')
       price = market['Last']
 
-      next if MarketService::Exclude.new.fire!(currencies, market['Volume'], percentile)
+      next if MarketService::Exclude.new.fire!(currencies, market['BaseVolume'], percentile)
 
       market_record = MarketService::Retrieve.new.fire!(market, currencies, price)
 

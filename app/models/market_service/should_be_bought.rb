@@ -13,10 +13,11 @@ module MarketService
 
       Rails.logger.info "Market: #{market.name} --- #{growth}%"
 
-      if growth >= THRESHOLD_OF_GROWTH
+      if growth >= THRESHOLD_OF_GROWTH #growth <= THRESHOLD_OF_GROWTH #growth >= THRESHOLD_OF_GROWTH
         trend = MarketService::Trend.new.fire!(market.name)
         return false unless trend[:info]
         return has_proper_trend(trend[:period], trend[:growth], trend[:spread])
+        #return true
       end
 
       false

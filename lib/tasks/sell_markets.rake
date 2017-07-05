@@ -25,11 +25,14 @@ namespace :sell do
       transaction = buy_order.transactionn
 
       open_sell = OrderService::SellExists.new.fire!(buy_order)
+      sold = false
 
       if open_sell[:exists]
-        if OrderService::Sold.new.fire!(open_sell[:order], market_name)
-          has_been_sold(wallet, transaction, market_name, market)
-        end
+        sold = OrderService::Sold.new.fire!(open_sell[:order], market_name)
+      end
+
+      if sold
+        has_been_sold(wallet, transaction, market_name, market)
       else
         if MarketService::ShouldBeSold.new.fire!(buy_order)
           if OrderService::Sell.new.fire!(buy_order, wallet, market, false)

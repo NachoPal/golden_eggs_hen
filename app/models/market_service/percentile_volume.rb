@@ -7,7 +7,7 @@ module MarketService
       markets_volume = []
 
       markets.each do |market|
-        markets_volume << market['Volume'] if market['Volume'].present?
+        markets_volume << market['BaseVolume'] if market['BaseVolume'].present?
       end
 
       markets_volume.percentile(percentile_percentage)
