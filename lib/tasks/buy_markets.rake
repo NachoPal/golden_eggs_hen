@@ -4,21 +4,26 @@ namespace :buy do
   task :markets, [:iteration_number] => :environment do |t, args|
     markets = Bittrex.client.get('public/getmarketsummaries')
 
-    percentile = MarketService::PercentileVolume.new.fire!(markets, PERCENTILE)
+    percentile_volume = MarketService::PercentileVolume.new.fire!(markets)
 
-    Rails.logger.info "Percentile: #{percentile}"
+    markets.delete_if do |market|
+      currencies = market['MarketName'].split('-')
+      MarketService::Exclude.new.fire!(currencies, market['BaseVolume'], percentile_volume)
+    end
+
+    ask_bid_stats = MarketService::OrderBookStats.new.fire!(markets)
+    percentile_ask_bids = MarketService::PercentileAskBidProp.new.fire!(ask_bid_stats)
+
+    #Rails.logger.info "Percentile: #{percentile}"
 
     markets.each do |market|
-
       currencies = market['MarketName'].split('-')
       price = market['Last']
-
-      next if MarketService::Exclude.new.fire!(currencies, market['BaseVolume'], percentile)
 
       market_record = MarketService::Retrieve.new.fire!(market, currencies, price)
 
       if WalletService::EnoughMoney.new.fire!(BASE_MARKET)
-        if MarketService::ShouldBeBought.new.fire!(market_record, price)
+        if MarketService::ShouldBeBought.new.fire!(market_record, price, ask_bid_stats, percentile_ask_bids)
           bought = OrderService::Buy.new.fire!(market_record)
 
           if bought[:success]
