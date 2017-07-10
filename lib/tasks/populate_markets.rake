@@ -18,15 +18,16 @@ namespace :populate do
       primary = Currency.where(name: currencies.first).first
       secondary = Currency.where(name: currencies.last).first
       price = market['Last']
+      volume = market['BaseVolume']
 
       market_record = Market.where(name: name)
 
       if market_record.present?
-        market_record.update(price: price)
+        market_record.update(price: price, volume: volume)
       else
         Market.create(name: name, primary_currency_id: primary.id,
                       secondary_currency_id: secondary.id,
-                      price: price)
+                      price: price, volume: volume)
       end
     end
   end

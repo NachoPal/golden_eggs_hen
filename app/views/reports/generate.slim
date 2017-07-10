@@ -12,13 +12,33 @@ table style= "width: 100%;"
 
   - @transactions.each do |transaction|
       tr
-        td = transaction[:name]
-        td = transaction[:open]
-        td = transaction[:quantity]
-        td = transaction[:buy]
-        td = transaction[:sell]
-        td = transaction[:benefit]
-        td = transaction[:percentage]
+        - if !transaction[:open]
+          td
+            b = transaction[:name]
+          td
+            b = transaction[:open]
+          td
+            b = transaction[:quantity]
+          td
+            b = transaction[:buy]
+          td
+            b = transaction[:sell]
+          td
+            b = transaction[:benefit]
+          td
+            b = transaction[:percentage]
+
+        - else
+          td = transaction[:name]
+          td = transaction[:open]
+          td = transaction[:quantity]
+          td = transaction[:buy]
+          td = transaction[:sell]
+          td = transaction[:benefit]
+          td = transaction[:percentage]
+
+
+
 
 
 

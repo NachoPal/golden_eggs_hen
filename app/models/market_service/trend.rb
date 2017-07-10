@@ -5,18 +5,30 @@ module MarketService
       history  = Bittrex.client.get("public/getmarkethistory?market=#{market_name}")
 
       if history.present?
+        size = history.count
 
-        times = history.map{|x| "#{ x['TimeStamp'].split('.').first}+00:00" }
+        first_price = 0
 
-        period_in_min = ((DateTime.rfc3339(times.first) - DateTime.rfc3339(times.last))*24*60).to_i
+        history.each_with_index do |order, i|
+          first_price = order['Price'] if i == 0
 
-        prices = history.map{ |x| x['Price'] }
-        spread = (((prices.max - prices.min).abs) * 100) / prices.first
-        growth = ((prices.last * 100) / prices.first) - 100
+          order_time = DateTime.rfc3339("#{ order['TimeStamp'].split('.').first}+08:00")
+          current_time = DateTime.now - 8.hour
 
-        { info: true, period: period_in_min, growth: growth, spread: spread }
+          if order_time > current_time - PERIOD_GROWTH.minute
+            if i == size - 1
+              last_price = order['Price']
+              return { info: true, growth: ((first_price * 100) / last_price) - 100 }
+            else
+              next
+            end
+          else
+            last_price = order['Price']
+            return { info: true, growth: ((first_price * 100) / last_price) - 100 }
+          end
+        end
       else
-        { info: false, period: nil, growth: nil, spread: nil }
+        { info: false, growth: nil }
       end
     end
   end

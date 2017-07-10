@@ -7,8 +7,13 @@ namespace :sell do
       TransactionService::Close.new.fire!(transaction)
       WalletService::Destroy.new.fire!(wallet, transaction)
 
-      current_price = Bittrex.client.get("public/getmarketsummary?market=#{market_name}").first['Last']
-      MarketService::Update.new.fire!(market, current_price)
+      market_get = Bittrex.client.get("public/getmarketsummary?market=#{market_name}")
+      current_price = market_get.first['Last']
+      current_volume = market_get.first['BaseVolume']
+
+      #ask_bid_stats = MarketService::OrderBookStats.new.fire!(market_get)
+
+      MarketService::Update.new.fire!(market, current_price, current_volume) #, ask_bid_stats)
     end
 
     wallets = WalletService::Retrieve.new.fire!

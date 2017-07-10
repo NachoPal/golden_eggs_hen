@@ -1,7 +1,7 @@
 module MarketService
   class Retrieve
 
-    def fire! (market, currencies, price)
+    def fire! (market, currencies, price, volume)
       name = market['MarketName']
 
       unless currencies_present?(currencies)
@@ -10,7 +10,7 @@ module MarketService
 
         Market.create(name: name, primary_currency_id: primary.id,
                       secondary_currency_id: secondary.id,
-                      price: price)
+                      price: price, volume: volume)
       end
       Market.where(name: name).first
     end

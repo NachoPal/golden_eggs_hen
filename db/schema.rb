@@ -34,6 +34,9 @@ ActiveRecord::Schema.define(version: 20170629085625) do
     t.integer  "primary_currency_id"
     t.integer  "secondary_currency_id"
     t.decimal  "price",                 precision: 16, scale: 8
+    t.decimal  "weighted_bid_mean",     precision: 16, scale: 8
+    t.decimal  "weighted_ask_mean",     precision: 16, scale: 8
+    t.decimal  "volume",                precision: 16, scale: 8
     t.datetime "created_at",                                     null: false
     t.datetime "updated_at",                                     null: false
     t.index ["primary_currency_id"], name: "index_markets_on_primary_currency_id", using: :btree
