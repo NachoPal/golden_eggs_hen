@@ -34,7 +34,7 @@ namespace :buy do
           bought = OrderService::Buy.new.fire!(market_record)
 
           if bought[:success]
-            OrderService::Sell.new.fire!(bought[:order], bought[:wallet], market_record, true)
+            OrderService::Sell.new.fire!(bought[:order], bought[:wallet], market_record, false)
           end
         end
       end

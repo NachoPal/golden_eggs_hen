@@ -11,18 +11,20 @@ module OrderService
             OrderService::Cancel.new.fire!(buy_record)
             sell(buy_record, bid_order['Rate'], wallet.balance, true)
             return true
-          end
-
-          lose_threshold_price = ((100 - THRESHOLD_OF_LOST) * buy_record.limit_price) / 100
-
-          if bid_order['Rate'] >= lose_threshold_price
-            OrderService::Cancel.new.fire!(buy_record)
-            sell(buy_record, bid_order['Rate'], wallet.balance, true)
-            return true
           else
-            OrderService::Cancel.new.fire!(buy_record)
-            sell(buy_record, lose_threshold_price, wallet.balance, false)
+            rate = ((100 + THRESHOLD_OF_GAIN) * buy_record.limit_price) / 100
+            sell(buy_record, rate, wallet.balance, false)
             return false
+            # lose_threshold_price = ((100 - THRESHOLD_OF_LOST) * buy_record.limit_price) / 100
+            #
+            # if bid_order['Rate'] >= lose_threshold_price
+            #   OrderService::Cancel.new.fire!(buy_record)
+            #   sell(buy_record, bid_order['Rate'], wallet.balance, true)
+            #   return true
+            # else
+            #   OrderService::Cancel.new.fire!(buy_record)
+            #   sell(buy_record, lose_threshold_price, wallet.balance, false)
+            #   return false
           end
         else
           next

@@ -38,7 +38,7 @@ unless defined?(Rails::Console)
     end
   end
 
-  s.every '1h' do
+  s.every "#{SELL_OLD_MARKETS_PERIOD}m" do
     Rake::Task['sell:old_markets'].reenable
     Rake::Task['sell:old_markets'].invoke
   end
