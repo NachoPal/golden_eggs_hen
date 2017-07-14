@@ -11,6 +11,12 @@ namespace :buy do
       MarketService::Exclude.new.fire!(currencies, market['BaseVolume'], percentile_volume)
     end
 
+    markets.each do |market|
+      market['DailyIncrease'] = (((market['Last'] * 100) / market['PrevDay']) - 100).round(2)
+    end
+
+
+    markets = markets.sort_by { |market| market['DailyIncrease'] }.reverse[0..NUM_MARKETS_TO_BUY - 1]
 
     #Rails.logger.info "Percentile: #{percentile}"
 
@@ -18,11 +24,13 @@ namespace :buy do
       currencies = market['MarketName'].split('-')
       price = market['Last']
       volume = market['BaseVolume']
+      ask = market['Ask']
+      bid = market['Bid']
 
       market_record = MarketService::Retrieve.new.fire!(market, currencies, price, volume)
 
       if WalletService::EnoughMoney.new.fire!(BASE_MARKET)
-        if MarketService::ShouldBeBought.new.fire!(market_record, price, volume, market)
+        if MarketService::ShouldBeBought.new.fire!(market_record, price, volume, ask, bid, market)
           bought = OrderService::Buy.new.fire!(market_record)
 
           if bought[:success]
@@ -32,7 +40,7 @@ namespace :buy do
       end
 
       if market_record.price != price && (args[:iteration_number] % UPDATE_MARKET_DB_EACH_X_MIN) == 0
-        MarketService::Update.new.fire!(market_record, price, volume) #, ask_bid_stats)
+        MarketService::Update.new.fire!(market_record, price, volume, ask, bid) #, ask_bid_stats)
       end
     end
   end

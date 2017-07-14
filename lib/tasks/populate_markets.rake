@@ -19,6 +19,8 @@ namespace :populate do
       secondary = Currency.where(name: currencies.last).first
       price = market['Last']
       volume = market['BaseVolume']
+      weighted_bid_mean  = market['Bid']
+      weighted_ask_mean  = market['Ask']
 
       market_record = Market.where(name: name)
 
@@ -27,7 +29,9 @@ namespace :populate do
       else
         Market.create(name: name, primary_currency_id: primary.id,
                       secondary_currency_id: secondary.id,
-                      price: price, volume: volume)
+                      price: price, volume: volume,
+                      weighted_ask_mean: weighted_ask_mean,
+                      weighted_bid_mean: weighted_bid_mean)
       end
     end
   end

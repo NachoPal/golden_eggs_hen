@@ -10,10 +10,12 @@ namespace :sell do
       market_get = Bittrex.client.get("public/getmarketsummary?market=#{market_name}")
       current_price = market_get.first['Last']
       current_volume = market_get.first['BaseVolume']
+      ask = market_get.first['Ask']
+      bid = market_get.first['Bid']
 
       #ask_bid_stats = MarketService::OrderBookStats.new.fire!(market_get)
 
-      MarketService::Update.new.fire!(market, current_price, current_volume) #, ask_bid_stats)
+      MarketService::Update.new.fire!(market, current_price, current_volume, ask, bid) #, ask_bid_stats)
     end
 
     wallets = WalletService::Retrieve.new.fire!

@@ -37,5 +37,10 @@ unless defined?(Rails::Console)
       market_request_counter = 0
     end
   end
+
+  s.every '1h' do
+    Rake::Task['sell:old_markets'].reenable
+    Rake::Task['sell:old_markets'].invoke
+  end
 end
 

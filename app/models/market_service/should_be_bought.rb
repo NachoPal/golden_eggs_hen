@@ -3,7 +3,7 @@ require 'array_stats'
 module MarketService
   class ShouldBeBought
 
-    def fire!(market_record, price, volume, market)
+    def fire!(market_record, price, volume, ask, bid, market)
 
       return false if already_bought?(market_record)
 
@@ -13,22 +13,35 @@ module MarketService
       current_volume = volume
       stored_volume = market_record.volume
 
+      current_bid = bid
+      stored_bid = market_record.weighted_bid_mean
 
+      current_ask = ask
+      stored_ask = market_record.weighted_ask_mean
 
       #TODO: Take care of 0.0 prices
       return false if current_price.nil? || stored_price.nil?
 
       price_growth = ((current_price * 100) / stored_price).round(2) - 100
       volume_growth = ((current_volume * 100) / stored_volume).round(2) - 100
+      ask_growth = ((current_bid * 100) / stored_bid).round(2) - 100
+      bid_growth = ((current_ask * 100) / stored_ask).round(2) - 100
       spread = ((market['Ask'] - market['Bid']) / market['Ask']) * 100
+      rise_on_the_day = ((current_price * 100) / market['PrevDay']) - 100
 
-      price_condition = price_growth >= BOTTOM_THRESHOLD_OF_GROWTH && price_growth <= CEIL_THRESHOLD_OF_GROWTH
+      price_condition = price_growth >= BOTTOM_THRESHOLD_OF_GROWTH && price_growth <= CEIL_THRESHOLD_OF_GROWTH #&& price_growth < bid_growth
+      #price_condition = price_growth < ask_growth
       volume_condition = volume_growth >= VOLUME_BOTTOM_THRESHOLD_OF_GROWTH
       spread_condition = spread < SPREAD_LIMIT
+      ask_bid_condition = bid_growth > BID_THRESHOLD && ask_growth > ASK_THRESHOLD #&& current_bid > current_price
 
-      Rails.logger.info "Market: #{market_record.name} --- price: #{price_growth}% --- volume: #{volume_growth}% --- spread: #{spread}"
+      Rails.logger.info "Market: #{market_record.name} --- price: #{price_growth}% --- volume: #{volume_growth}% --- spread: #{spread} --- ask: #{ask_growth}% --- bid: #{bid_growth}% -- #{rise_on_the_day}%"
 
-      if price_condition && volume_condition && spread_condition
+      #if price_condition && volume_condition && spread_condition
+      #if price_condition && ask_bid_condition && volume_condition && spread_condition
+      #if rise_on_the_day >= GAIN_ON_THE_DAY_THRESHOLD
+      if market['DailyIncrease'] > 0
+=begin
         trend = MarketService::Trend.new.fire!(market_record.name)
 
         return false unless trend[:info]
@@ -36,7 +49,8 @@ module MarketService
         proper_trend = has_proper_trend(trend[:growth])
 
         return proper_trend
-
+=end
+        return true
         #if proper_trend
           #ask_bid_stats = MarketService::OrderBookStats.new.fire!([market])
           #proper_ask_bid = has_proper_ask_bid_prop(market_record, market_record.name, ask_bid_stats)

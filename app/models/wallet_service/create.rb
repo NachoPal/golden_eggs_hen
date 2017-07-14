@@ -10,8 +10,9 @@ module WalletService
       #Restar inversion de BTC wallet
 
       btc_wallet = Wallet.joins(:currency).where(currencies: {name: BASE_MARKET }).first
-      btc_wallet.update(available: btc_wallet.available - quantity * rate,
-                        balance: btc_wallet.balance - quantity * rate)
+      commission = (BTC_QUANTITY_TO_BUY * COMMISSION / 100)
+      btc_wallet.update(available: btc_wallet.available - quantity * rate - commission,
+                        balance: btc_wallet.balance - quantity * rate - commission)
 
       new_wallet
     end
