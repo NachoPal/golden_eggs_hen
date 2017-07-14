@@ -31,14 +31,13 @@ namespace :sell do
     num_wallets = Wallet.count
 
     if num_wallets > (NUM_MARKETS_TO_BUY + 1)
-      transaction_time = Transactionn.all.order(created_at: :asc).first.created_at
+      transaction_time = Transactionn.all.order(created_at: :desc).first.created_at
       now_time = Time.zone.now
 
       time_ago = (now_time - transaction_time) / 60
 
       if time_ago >= 60
         growth_hash = []
-        benefit = 0
 
         Transactionn.where.not(benefit: nil).each do |transaction|
           market_name = transaction.last.market.name
@@ -52,16 +51,16 @@ namespace :sell do
         growth_hash = growth_hash.sort_by { |transaction| transaction[:growth] }.reverse
 
         growth_hash.each do |transaction|
-          transaction_record = Transactionn.find(transaction.id)
+          transaction_record = Transactionn.find(transaction[:id])
           market = transaction_record.market
           market_name = market.name.split('-').last
           buy_order = transaction_record.buys.first
           wallet = Wallet.joins(:currency).where(currencies: {name: market_name}).first
 
-          benefit =
-
-          OrderService::Sell.new.fire!(buy_order, wallet, market, true)
-          has_been_sold(wallet, transaction, market_name, market)
+          if (benefit_last_day * PERCENTAGE_TO_LOSE_OLD_MARKETS) > transaction[:growth]
+            OrderService::Sell.new.fire!(buy_order, wallet, market, true)
+            has_been_sold(wallet, transaction, market_name, market)
+          end
         end
       end
     end
