@@ -1,13 +1,4 @@
-#1.- Pensar bien el benefit del last day, xq cuando empiece el nuevo dia, aun teniendo
-#dinero ganado no venderá nada xq el beneficio del dia se pondrá a 0
-
-#2.- Vender a la hora si no se ha vendido aun ademas de mirar a la hora si ha pasado
-#una hora desde la ultima venta
-
-#3.- Esta comprando mas de 10 carteras, arreglar eso en ThereIsEnough money. POsiblemente
-#meter un condicional con el numero de carteras maximo
-
-#4.- Arreglar (benefit_last_day * PERCENTAGE_TO_LOSE_OLD_MARKETS) condicional, esta mal
+# Sell positive markets after an hour if there is not benefit
 
 namespace :sell do
 
@@ -30,7 +21,7 @@ namespace :sell do
     end
 
     def benefit_last_day
-      beginning_of_day = Time.zone.now.beginning_of_day
+      beginning_of_day = Time.zone.now - 24.hour
 
       transactions = Transactionn.where.not(benefit: nil).where('created_at > ?', beginning_of_day)
       num_transactions = transactions.count
@@ -44,44 +35,50 @@ namespace :sell do
 
     if num_wallets == (NUM_MARKETS_TO_BUY + 1) && sells.present?
 
-      transaction_time = sells.last.created_at
-      #transaction_time = Transactionn.all.order(created_at: :desc).first.created_at
-      now_time = Time.zone.now
+      growth_hash = []
+      Rails.logger.info "========= ENTRA ========="
+      time_limit = (SELL_OLD_MARKETS_PERIOD - 5).minute.ago
+      transactions_to_sell = Transactionn.where(benefit: nil).where('created_at < ?', time_limit)
 
-      time_ago = (now_time - transaction_time) / 60
+      transactions_to_sell.each do |transaction|
+        market_name = transaction.market.name
+        buy_price = transaction.buys.first.limit_price
+        current_price = Bittrex.client.get("public/getmarketsummary?market=#{market_name}").first['Bid']
 
-      if time_ago >= SELL_OLD_MARKETS_PERIOD
-        growth_hash = []
-        Rails.logger.info "========= ENTRA ========="
-        Transactionn.where(benefit: nil).each do |transaction|
-          market_name = transaction.market.name
-          buy_price = transaction.buys.first.limit_price
-          current_price = Bittrex.client.get("public/getmarketsummary?market=#{market_name}").first['Last']
+        growth = (((current_price * 100) / buy_price) - 100).round(2)
+        growth_hash << {id: transaction.id, growth: growth} if growth < 0
+      end
 
-          growth = (((current_price * 100) / buy_price) - 100).round(2)
-          growth_hash << {id: transaction.id, growth: growth} if growth < 0
+      #growth_hash = growth_hash.sort_by { |transaction| transaction[:growth] }.reverse
+      growth_hash = growth_hash.sort_by { |transaction| transaction[:growth] }
+
+      benefit = benefit_last_day * PERCENTAGE_TO_LOSE_OLD_MARKETS
+      to_sell = []
+
+      growth_hash.each do |transaction|
+        Rails.logger.info "#{transaction} -- #{transaction[:growth].to_f}"
+        Rails.logger.info "#{benefit_last_day}"
+
+        sum_lost = -(transaction[:growth])
+
+        if benefit > sum_lost
+          to_sell << transaction
+          benefit -= sum_lost + (COMMISSION * 2)
+        else
+          next
         end
+      end
 
-        growth_hash = growth_hash.sort_by { |transaction| transaction[:growth] }.reverse
+      to_sell.each do |transaction|
+        transaction_record = Transactionn.find(transaction[:id])
+        market = transaction_record.market
+        currency = market.name.split('-').last
+        market_name = "#{BASE_MARKET}-#{currency}"
+        buy_order = transaction_record.buys.first
+        wallet = Wallet.joins(:currency).where(currencies: {name: currency}).first
 
-        growth_hash.each do |transaction|
-          transaction_record = Transactionn.find(transaction[:id])
-          market = transaction_record.market
-          currency = market.name.split('-').last
-          market_name = "#{BASE_MARKET}-#{currency}"
-          buy_order = transaction_record.buys.first
-          wallet = Wallet.joins(:currency).where(currencies: {name: currency}).first
-
-          Rails.logger.info "#{transaction} -- #{transaction[:growth].to_f}"
-          Rails.logger.info "#{benefit_last_day}"
-
-          if (benefit_last_day * PERCENTAGE_TO_LOSE_OLD_MARKETS) > -(transaction[:growth])
-            OrderService::Sell.new.fire!(buy_order, wallet, market, true)
-            has_been_sold(wallet, transaction_record, market_name, market)
-          else
-            break
-          end
-        end
+        OrderService::Sell.new.fire!(buy_order, wallet, market, true)
+        has_been_sold(wallet, transaction_record, market_name, market)
       end
     end
   end

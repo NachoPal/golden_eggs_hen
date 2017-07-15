@@ -3,7 +3,7 @@ require 'array_stats'
 module MarketService
   class ShouldBeBought
 
-    def fire!(market_record, price, volume, ask, bid, market)
+    def fire!(market_record, price, volume, ask, bid, diff, market)
 
       return false if already_bought?(market_record)
 
@@ -40,7 +40,7 @@ module MarketService
       #if price_condition && volume_condition && spread_condition
       #if price_condition && ask_bid_condition && volume_condition && spread_condition
       #if rise_on_the_day >= GAIN_ON_THE_DAY_THRESHOLD
-      if market['DailyIncrease'] > 0
+      if market['DailyIncrease'] > 0 && diff > -10
 =begin
         trend = MarketService::Trend.new.fire!(market_record.name)
 

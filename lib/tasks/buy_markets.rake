@@ -12,11 +12,13 @@ namespace :buy do
     end
 
     markets.each do |market|
+      market['MaxDiff'] = ((market['Last'] * 100) / market['High']) - 100
       market['DailyIncrease'] = (((market['Last'] * 100) / market['PrevDay']) - 100).round(2)
     end
 
 
-    markets = markets.sort_by { |market| market['DailyIncrease'] }.reverse[0..NUM_MARKETS_TO_BUY - 1]
+    markets = markets.sort_by { |market| market['DailyIncrease'] }.reverse #[0..NUM_MARKETS_TO_BUY - 1]
+    #markets = markets.sort_by { |market| market['MaxDiff'] }.reverse #[0..NUM_MARKETS_TO_BUY - 1]
 
     #Rails.logger.info "Percentile: #{percentile}"
 
@@ -26,11 +28,12 @@ namespace :buy do
       volume = market['BaseVolume']
       ask = market['Ask']
       bid = market['Bid']
+      diff = market['MaxDiff']
 
       market_record = MarketService::Retrieve.new.fire!(market, currencies, price, volume)
 
       if WalletService::EnoughMoney.new.fire!(BASE_MARKET)
-        if MarketService::ShouldBeBought.new.fire!(market_record, price, volume, ask, bid, market)
+        if MarketService::ShouldBeBought.new.fire!(market_record, price, volume, ask, bid, diff, market)
           bought = OrderService::Buy.new.fire!(market_record)
 
           if bought[:success]
