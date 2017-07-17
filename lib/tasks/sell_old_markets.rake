@@ -4,12 +4,15 @@
 #then I'll have more money to sell with lost (Not sure, I lose too much selling)
 
 #Keep track of new candidates and sell best option in case there is a good oportunity. Same rule +
-#watch if has increased a lot in few time
+#watch if has increased a lot in few time VERY IMPORTANT. Probably create records in the database,
+#a new model to point out who is the candidate for checking to sell a Wallet. Or maybe easier to
+#sell and then buy when you are checking to buy. I would have then to change the Wallet number
+#restriction or money available
 
 #Is buying same market after selling it for a very low growth, doesn't make sense because I lose money
 #wth the commissions
 
-#Change DIFF_MAX_PRICE to 2. I lost a skyrocket because of being 1 to low
+#Change DIFF_MAX_PRICE to 2. I lost a skyrocket because of being 1 to low NOT SURE
 
 #To sell with benefits in live, I mean check if it reaches the 5% and then place the order??
 
@@ -17,6 +20,9 @@
 
 #Check the ask price as another rule of buying. Sometimes it's clearly lower that the price of
 #the bid you are gonna buy
+
+#When you buy something you can tell if it's very risky because you are traking the price growth
+#and maybe it has grown a lot in very sort time. If that case sell inmediatly it drops
 
 namespace :sell do
 
