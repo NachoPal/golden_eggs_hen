@@ -3,6 +3,9 @@
 #Order Wallets to check to sell by benefit. So in this way I'll sell first with benefit, so
 #then I'll have more money to sell with lost
 
+#Keep track of new candidates and sell in case there is a good oportunity. Same rule +
+#watch if has increased a lot in few time
+
 namespace :sell do
 
   desc 'Sell old markets'
