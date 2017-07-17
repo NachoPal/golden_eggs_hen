@@ -49,7 +49,8 @@ module MarketService
 
           transactions_benefit = transactions.map(&:percentage).reduce { |sum,n| sum+=n }
 
-          benefit = benefit_last_day * PERCENTAGE_TO_LOSE_OLD_MARKETS
+          #benefit = benefit_last_day * PERCENTAGE_TO_LOSE_OLD_MARKETS
+          benefit = benefit_last_day * 0.5
 
           #growth <= -(transactions_benefit * 0.5)
           return benefit > -growth if transactions_benefit >= 14

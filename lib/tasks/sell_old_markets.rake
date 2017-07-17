@@ -1,4 +1,7 @@
+#Change to 1hour the time for rapid increase and big drop down?? Now is 24
 
+#Order Wallets to check to sell by benefit. So in this way I'll sell first with benefit, so
+#then I'll have more money to sell with lost
 
 namespace :sell do
 
