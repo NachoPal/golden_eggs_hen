@@ -6,6 +6,10 @@
 #Keep track of new candidates and sell in case there is a good oportunity. Same rule +
 #watch if has increased a lot in few time
 
+#Is buying same market after selling it for a very low growth
+
+#Change DIFF_MAX_PRICE to 2. I lost a skyrocket because of being 1 to low
+
 namespace :sell do
 
   desc 'Sell old markets'
