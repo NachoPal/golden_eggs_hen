@@ -1,14 +1,17 @@
 #Change to 1hour the time for rapid increase and big drop down?? Now is 24
 
 #Order Wallets to check to sell by benefit. So in this way I'll sell first with benefit, so
-#then I'll have more money to sell with lost
+#then I'll have more money to sell with lost (Not sure, I lose too much selling)
 
-#Keep track of new candidates and sell in case there is a good oportunity. Same rule +
+#Keep track of new candidates and sell best option in case there is a good oportunity. Same rule +
 #watch if has increased a lot in few time
 
-#Is buying same market after selling it for a very low growth
+#Is buying same market after selling it for a very low growth, doesn't make sense because I lose money
+#wth the commissions
 
 #Change DIFF_MAX_PRICE to 2. I lost a skyrocket because of being 1 to low
+
+#To sell with benefits in live, I mean check if it reaches the 5% and then place the order??
 
 namespace :sell do
 
