@@ -13,6 +13,11 @@
 
 #To sell with benefits in live, I mean check if it reaches the 5% and then place the order??
 
+#Rise of 10% in 5min proportion sell inmediatly there is a drop of 2.5-5%
+
+#Check the ask price as another rule of buying. Sometimes it's clearly lower that the price of
+#the bid you are gonna buy
+
 namespace :sell do
 
   desc 'Sell old markets'
