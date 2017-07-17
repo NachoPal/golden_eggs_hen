@@ -24,6 +24,8 @@
 #When you buy something you can tell if it's very risky because you are traking the price growth
 #and maybe it has grown a lot in very sort time. If that case sell inmediatly it drops
 
+#Filter by volume a few markets probably under 20.000
+
 namespace :sell do
 
   desc 'Sell old markets'
