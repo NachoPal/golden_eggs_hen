@@ -7,6 +7,8 @@ module MarketService
 
       return false if already_bought?(market_record)
 
+      return false if has_been_sold_recently(market_record)
+
       current_price = price
       stored_price = market_record.price
 
@@ -35,12 +37,13 @@ module MarketService
       spread_condition = spread < SPREAD_LIMIT
       ask_bid_condition = bid_growth > BID_THRESHOLD && ask_growth > ASK_THRESHOLD #&& current_bid > current_price
 
+      diff_ask_last = ((market['Ask'] * 100) / market['Last']) - 100
       Rails.logger.info "Market: #{market_record.name} --- price: #{price_growth}% --- volume: #{volume_growth}% --- spread: #{spread} --- ask: #{ask_growth}% --- bid: #{bid_growth}% -- #{rise_on_the_day}%"
 
       #if price_condition && volume_condition && spread_condition
       #if price_condition && ask_bid_condition && volume_condition && spread_condition
       #if rise_on_the_day >= GAIN_ON_THE_DAY_THRESHOLD
-      if market['DailyIncrease'] > 0 && diff > -10
+      if market['DailyIncrease'] > 0 && diff > -DIFF_MAX_PRICE #&& diff_ask_last <= 1
 =begin
         trend = MarketService::Trend.new.fire!(market_record.name)
 
@@ -68,6 +71,12 @@ module MarketService
 
       wallet = Wallet.where(currency_id: secondary_currency_id)
       wallet.present?
+    end
+
+    def has_been_sold_recently(market)
+      transactions = market.transactionns
+      time_limit = (QUARANTINE_TIME_TO_BUY).minute.ago
+      transactions.where('updated_at > ?',time_limit).where('benefit < ?', 0).present?
     end
 
     def has_proper_trend(growth)

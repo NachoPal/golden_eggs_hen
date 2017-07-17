@@ -1,4 +1,4 @@
-# Sell positive markets after an hour if there is not benefit
+
 
 namespace :sell do
 

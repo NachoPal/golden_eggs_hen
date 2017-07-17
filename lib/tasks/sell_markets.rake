@@ -42,7 +42,7 @@ namespace :sell do
         has_been_sold(wallet, transaction, market_name, market)
       else
         if MarketService::ShouldBeSold.new.fire!(buy_order)
-          if OrderService::Sell.new.fire!(buy_order, wallet, market, false)
+          if OrderService::Sell.new.fire!(buy_order, wallet, market, true)
             has_been_sold(wallet, transaction, market_name, market)
           end
         end
