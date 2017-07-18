@@ -46,6 +46,7 @@ GEM
     builder (3.2.3)
     coderay (1.1.1)
     concurrent-ruby (1.0.5)
+    dalli (2.7.6)
     erubis (2.7.0)
     et-orbi (1.0.4)
       tzinfo
@@ -157,6 +158,7 @@ PLATFORMS
 DEPENDENCIES
   bittrex
   bkoski-array_stats
+  dalli
   jquery-rails
   listen (~> 3.0.5)
   pg (~> 0.18)

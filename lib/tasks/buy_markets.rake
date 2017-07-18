@@ -30,6 +30,8 @@ namespace :buy do
       bid = market['Bid']
       diff = market['MaxDiff']
 
+      MarketService::SaveInCache.new.fire!(market['MarketName'], price)
+
       market_record = MarketService::Retrieve.new.fire!(market, currencies, price, volume)
 
       if WalletService::EnoughMoney.new.fire!(BASE_MARKET)
@@ -42,7 +44,7 @@ namespace :buy do
         end
       end
 
-      if market_record.price != price && (args[:iteration_number] % UPDATE_MARKET_DB_EACH_X_MIN) == 0
+      if market_record.price != price && (args[:iteration_number] % LENGTH_ARRAY_PRICES) == 0
         MarketService::Update.new.fire!(market_record, price, volume, ask, bid) #, ask_bid_stats)
       end
     end
