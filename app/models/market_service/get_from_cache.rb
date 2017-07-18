@@ -1,9 +1,9 @@
 module MarketService
-  class SaveInCache
+  class GetFromCache
 
     def fire!(market, time_ago)
       array_prices = CACHE.get(market)
-      steps = time_ago / PERIOD
+      steps = time_ago / PERIOD_SEG
 
       array_prices.last(steps).delete(nil)
 

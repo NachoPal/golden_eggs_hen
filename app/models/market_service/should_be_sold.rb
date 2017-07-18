@@ -29,8 +29,12 @@ module MarketService
         growth = (((current_price * 100) / buy_price) - 100).round(2)
 
 
+        if CACHE.get('Sky Rocket').present?
+          benefit = benefit_last_day * 0.5
+          return benefit > -growth
+        end
 
-        if transaction.created_at < time_limit
+        if transaction.created_at < time_limit && growth < COMMISSION * 2
           #growth_hash << {id: transaction.id, growth: growth} if growth < 0
 
           benefit = benefit_last_day * PERCENTAGE_TO_LOSE_OLD_MARKETS
@@ -42,7 +46,7 @@ module MarketService
           return benefit > -growth
         end
 
-        if growth <= -4
+        if growth <= -5
           #time_limit = (5).minute.ago
 
           # transactions = Transactionn.joins([:account, :market]).
@@ -61,7 +65,7 @@ module MarketService
 
           #growth <= -(transactions_benefit * 0.5)
 
-          market_growth = MarketService::SaveInCache.fire!(market_name, 5)
+          market_growth = MarketService::GetFromCache.new.fire!(market_name, 5)
 
           market_growth >= 10 && ask < last_price
 

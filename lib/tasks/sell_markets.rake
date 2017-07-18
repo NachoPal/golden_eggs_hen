@@ -24,6 +24,12 @@ namespace :sell do
 
     markets = Bittrex.client.get("public/getmarketsummaries")
 
+    sky_rocket_markets = markets.select { |market| market['RecentIncrease'] >= 10 }.reverse
+
+    sky_rocket_markets = Market.where(name: sky_rocket_markets.map { |market| market['MarketName'] })
+
+    CACHE.set('Sky Rocket', sky_rocket_markets) if sky_rocket_markets.present?
+
     wallets.each do |wallet|
       currency = wallet.currency
       next if currency.name == BASE_MARKET

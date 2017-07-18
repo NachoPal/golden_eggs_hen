@@ -7,7 +7,9 @@ module MarketService
 
       return false if already_bought?(market_record)
 
-      return false if has_been_sold_recently(market_record)
+      return false if has_been_sold_recently?(market_record)
+
+      #return true if there_is_sky_rocket?
 
       current_price = price
       stored_price = market_record.price
@@ -43,7 +45,9 @@ module MarketService
       #if price_condition && volume_condition && spread_condition
       #if price_condition && ask_bid_condition && volume_condition && spread_condition
       #if rise_on_the_day >= GAIN_ON_THE_DAY_THRESHOLD
-      if market['DailyIncrease'] > 0 && diff > -DIFF_MAX_PRICE && diff_ask_last >= 0
+
+      #if market['DailyIncrease'] > 0 && diff > -DIFF_MAX_PRICE && diff_ask_last >= 0
+      if diff > -DIFF_MAX_PRICE && diff_ask_last >= 0
 =begin
         trend = MarketService::Trend.new.fire!(market_record.name)
 
@@ -66,6 +70,11 @@ module MarketService
 
     private
 
+    def there_is_sky_rocket?
+      CACHE.get('Sky Rocket').present?
+
+    end
+
     def already_bought?(market)
       secondary_currency_id = market.secondary_currency_id
 
@@ -73,7 +82,7 @@ module MarketService
       wallet.present?
     end
 
-    def has_been_sold_recently(market)
+    def has_been_sold_recently?(market)
       transactions = market.transactionns
       time_limit = (QUARANTINE_TIME_TO_BUY).minute.ago
       transactions.where('updated_at > ?',time_limit).where('benefit <= ?', 1).present?

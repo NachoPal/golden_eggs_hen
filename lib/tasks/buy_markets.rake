@@ -14,10 +14,21 @@ namespace :buy do
     markets.each do |market|
       market['MaxDiff'] = ((market['Last'] * 100) / market['High']) - 100
       market['DailyIncrease'] = (((market['Last'] * 100) / market['PrevDay']) - 100).round(2)
+      #market['RecentIncrease'] = MarketService::GetFromCache.new.fire!(market['MarketName'], 5)
     end
 
 
     markets = markets.sort_by { |market| market['DailyIncrease'] }.reverse #[0..NUM_MARKETS_TO_BUY - 1]
+
+    if CACHE.get('Sky Rocket').present?
+      names = CACHE.get('Sky Rocket')
+
+      sky_rocket_markets = markets.select { |market| names.include?(markets.first['MarketName']) }
+      markets = markets - sky_rocket_markets
+      markets = sky_rocket_markets + markets
+      CACHE.flush('Sky Rocket')
+    end
+
     #markets = markets.sort_by { |market| market['MaxDiff'] }.reverse #[0..NUM_MARKETS_TO_BUY - 1]
 
     #Rails.logger.info "Percentile: #{percentile}"
@@ -31,6 +42,9 @@ namespace :buy do
       diff = market['MaxDiff']
 
       MarketService::SaveInCache.new.fire!(market['MarketName'], price)
+      market_growth = MarketService::GetFromCache.new.fire!(market['MarketName'], 5)
+
+      Rails.logger.info "Market - #{market['MarketName']}, Growth - #{market_growth}"
 
       market_record = MarketService::Retrieve.new.fire!(market, currencies, price, volume)
 
