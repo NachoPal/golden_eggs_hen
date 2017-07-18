@@ -37,8 +37,8 @@ module MarketService
           return benefit > -growth
         end
 
-        if growth <= -10
-          time_limit = (24).hour.ago
+        if growth <= -5
+          time_limit = (1).minute.ago
 
           transactions = Transactionn.joins([:account, :market]).
                                       where(accounts: {id: 1}, markets: {id: market.id}).
@@ -50,7 +50,7 @@ module MarketService
           transactions_benefit = transactions.map(&:percentage).reduce { |sum,n| sum+=n }
 
           #benefit = benefit_last_day * PERCENTAGE_TO_LOSE_OLD_MARKETS
-          benefit = benefit_last_day * 0.5
+          #benefit = benefit_last_day * 0.5
 
           #growth <= -(transactions_benefit * 0.5)
           return benefit > -growth if transactions_benefit >= 14

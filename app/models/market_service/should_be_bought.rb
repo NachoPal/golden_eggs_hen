@@ -43,7 +43,7 @@ module MarketService
       #if price_condition && volume_condition && spread_condition
       #if price_condition && ask_bid_condition && volume_condition && spread_condition
       #if rise_on_the_day >= GAIN_ON_THE_DAY_THRESHOLD
-      if market['DailyIncrease'] > 0 && diff > -DIFF_MAX_PRICE #&& diff_ask_last <= 1
+      if market['DailyIncrease'] > 0 && diff > -DIFF_MAX_PRICE && diff_ask_last >= 0
 =begin
         trend = MarketService::Trend.new.fire!(market_record.name)
 
@@ -76,7 +76,7 @@ module MarketService
     def has_been_sold_recently(market)
       transactions = market.transactionns
       time_limit = (QUARANTINE_TIME_TO_BUY).minute.ago
-      transactions.where('updated_at > ?',time_limit).where('benefit < ?', 0).present?
+      transactions.where('updated_at > ?',time_limit).where('benefit <= ?', 1).present?
     end
 
     def has_proper_trend(growth)
