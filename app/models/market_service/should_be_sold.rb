@@ -22,8 +22,13 @@ module MarketService
         market = transaction.market
         market_name = market.name
         buy_price = buy_order.limit_price
-        current_price = Bittrex.client.get("public/getmarketsummary?market=#{market_name}").first['Bid']
+        market_info = Bittrex.client.get("public/getmarketsummary?market=#{market_name}").first
+        current_price = market_info['Bid']
+        ask = market_info['Ask']
+        last_price = market_info['Last']
         growth = (((current_price * 100) / buy_price) - 100).round(2)
+
+
 
         if transaction.created_at < time_limit
           #growth_hash << {id: transaction.id, growth: growth} if growth < 0
@@ -37,23 +42,30 @@ module MarketService
           return benefit > -growth
         end
 
-        if growth <= -5
-          time_limit = (1).minute.ago
+        if growth <= -4
+          #time_limit = (5).minute.ago
 
-          transactions = Transactionn.joins([:account, :market]).
-                                      where(accounts: {id: 1}, markets: {id: market.id}).
-                                      where.not(benefit:nil).
-                                      where('transactionns.created_at > ?', time_limit)
+          # transactions = Transactionn.joins([:account, :market]).
+          #                             where(accounts: {id: 1}, markets: {id: market.id}).
+          #                             where.not(benefit:nil).
+          #                             where('transactionns.created_at > ?', time_limit)
 
-          return false unless transactions.present?
+          #return false unless transactions.present?
 
-          transactions_benefit = transactions.map(&:percentage).reduce { |sum,n| sum+=n }
+          #transactions_benefit = transactions.map(&:percentage).reduce { |sum,n| sum+=n }
 
           #benefit = benefit_last_day * PERCENTAGE_TO_LOSE_OLD_MARKETS
           #benefit = benefit_last_day * 0.5
 
+          #benefit = benefit_last_day
+
           #growth <= -(transactions_benefit * 0.5)
-          return benefit > -growth if transactions_benefit >= 14
+
+          market_growth = MarketService::SaveInCache.fire!(market_name, 5)
+
+          market_growth >= 10 && ask < last_price
+
+          #return benefit > -growth if transactions_benefit >= 9
         end
       #end
     end

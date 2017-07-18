@@ -26,11 +26,11 @@ namespace :sell do
 
     wallets.each do |wallet|
       currency = wallet.currency
-      next if currency == BASE_MARKET
+      next if currency.name == BASE_MARKET
       market = currency.market
       transaction = market.transactionns.where(account_id: 1).last
       buy_price = transaction.buys.first.limit_price
-      current_price = markets.select { |m| m['MarketName']== m.name }.first['Bid']
+      current_price = markets.select { |m| m['MarketName']== market.name }.first['Bid']
 
       growth = (((current_price * 100) / buy_price) - 100).round(2)
 
