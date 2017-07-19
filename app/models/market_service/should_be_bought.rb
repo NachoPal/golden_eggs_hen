@@ -40,7 +40,8 @@ module MarketService
       ask_bid_condition = bid_growth > BID_THRESHOLD && ask_growth > ASK_THRESHOLD #&& current_bid > current_price
 
       diff_ask_last = ((market['Ask'] * 100) / market['Last']) - 100
-      Rails.logger.info "Market: #{market_record.name} --- price: #{price_growth}% --- volume: #{volume_growth}% --- spread: #{spread} --- ask: #{ask_growth}% --- bid: #{bid_growth}% -- #{rise_on_the_day}%"
+
+      #Rails.logger.info "Market: #{market_record.name} --- price: #{price_growth}% --- volume: #{volume_growth}% --- spread: #{spread} --- ask: #{ask_growth}% --- bid: #{bid_growth}% -- #{rise_on_the_day}%"
 
       #if price_condition && volume_condition && spread_condition
       #if price_condition && ask_bid_condition && volume_condition && spread_condition

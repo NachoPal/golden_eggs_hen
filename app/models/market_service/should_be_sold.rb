@@ -30,8 +30,9 @@ module MarketService
 
 
         if CACHE.get('Sky Rocket').present?
-          benefit = benefit_last_day * 0.5
-          return benefit > -growth
+          #benefit = benefit_last_day * 0.5
+          #return benefit > -growth
+          true
         end
 
         if transaction.created_at < time_limit && growth < COMMISSION * 2

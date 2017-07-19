@@ -15,6 +15,7 @@ array_price_length = LENGTH_ARRAY_PRICES + 2
 unless defined?(Rails::Console)
 
   start.in '0.1s' do
+    CACHE.flush_all
     puts "====================== DESTRUYO ========================="
     Orderr.destroy_all
     Wallet.destroy_all

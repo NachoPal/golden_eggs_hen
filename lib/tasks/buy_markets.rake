@@ -22,18 +22,18 @@ namespace :buy do
 
     if CACHE.get('Sky Rocket').present?
       names = CACHE.get('Sky Rocket')
-
-      sky_rocket_markets = markets.select { |market| names.include?(markets.first['MarketName']) }
+      Rails.logger.info "Sky Rocket: #{names}"
+      sky_rocket_markets = markets.select { |market| names.include?(market['MarketName']) }
       markets = markets - sky_rocket_markets
       markets = sky_rocket_markets + markets
-      CACHE.flush('Sky Rocket')
+      CACHE.delete('Sky Rocket')
     end
 
     #markets = markets.sort_by { |market| market['MaxDiff'] }.reverse #[0..NUM_MARKETS_TO_BUY - 1]
 
     #Rails.logger.info "Percentile: #{percentile}"
 
-    markets.each do |market|
+    markets.each_with_index do |market, i|
       currencies = market['MarketName'].split('-')
       price = market['Last']
       volume = market['BaseVolume']
@@ -41,10 +41,12 @@ namespace :buy do
       bid = market['Bid']
       diff = market['MaxDiff']
 
-      MarketService::SaveInCache.new.fire!(market['MarketName'], price)
-      market_growth = MarketService::GetFromCache.new.fire!(market['MarketName'], 5)
+      Rails.logger.info "Should be Bought: #{market['MarketName']} --- Diff: #{diff}" if i==0
 
-      Rails.logger.info "Market - #{market['MarketName']}, Growth - #{market_growth}"
+      MarketService::SaveInCache.new.fire!(market['MarketName'], price)
+      #market_growth = MarketService::GetFromCache.new.fire!(market['MarketName'], 5)
+
+      #Rails.logger.info "Market - #{market['MarketName']}, Growth - #{market_growth}"
 
       market_record = MarketService::Retrieve.new.fire!(market, currencies, price, volume)
 

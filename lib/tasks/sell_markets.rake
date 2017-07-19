@@ -24,9 +24,15 @@ namespace :sell do
 
     markets = Bittrex.client.get("public/getmarketsummaries")
 
+    markets.select! { |market| CACHE.get(market['MarketName']).present? }
+
+    markets.each do |market|
+      market['RecentIncrease'] = MarketService::GetFromCache.new.fire!(market['MarketName'], 5)
+    end
+
     sky_rocket_markets = markets.select { |market| market['RecentIncrease'] >= 10 }.reverse
 
-    sky_rocket_markets = Market.where(name: sky_rocket_markets.map { |market| market['MarketName'] })
+    sky_rocket_markets = Market.where(name: sky_rocket_markets.map { |market| market['MarketName'] }).map(&:name)
 
     CACHE.set('Sky Rocket', sky_rocket_markets) if sky_rocket_markets.present?
 
