@@ -48,6 +48,14 @@ module MarketService
       #if rise_on_the_day >= GAIN_ON_THE_DAY_THRESHOLD
 
       #if market['DailyIncrease'] > 0 && diff > -DIFF_MAX_PRICE && diff_ask_last >= 0
+
+      if CACHE.get('Sky Rocket').present?
+        if CACHE.get('Sky Rocket').include?(market_record.name) && diff_ask_last >= 0
+          CACHE.delete('Sky Rocket')
+          return true
+        end
+      end
+
       if diff > -DIFF_MAX_PRICE && diff_ask_last >= 0
 =begin
         trend = MarketService::Trend.new.fire!(market_record.name)

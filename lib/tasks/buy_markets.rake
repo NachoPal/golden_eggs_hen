@@ -26,7 +26,7 @@ namespace :buy do
       sky_rocket_markets = markets.select { |market| names.include?(market['MarketName']) }
       markets = markets - sky_rocket_markets
       markets = sky_rocket_markets + markets
-      CACHE.delete('Sky Rocket')
+
     end
 
     #markets = markets.sort_by { |market| market['MaxDiff'] }.reverse #[0..NUM_MARKETS_TO_BUY - 1]

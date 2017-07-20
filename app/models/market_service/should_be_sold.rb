@@ -32,7 +32,7 @@ module MarketService
         if CACHE.get('Sky Rocket').present?
           #benefit = benefit_last_day * 0.5
           #return benefit > -growth
-          true
+          return true
         end
 
         if transaction.created_at < time_limit && growth < COMMISSION * 2
@@ -47,7 +47,7 @@ module MarketService
           return benefit > -growth
         end
 
-        if growth <= -5
+        if growth <= -5 &&
           #time_limit = (5).minute.ago
 
           # transactions = Transactionn.joins([:account, :market]).
